@@ -10,9 +10,9 @@
 % wave propagation.
 
 %% Initialize Workspace
-clear;
-close all;
-clc;
+% clear;
+% close all;
+% clc;
 
 %% Input Parameters
 %Frequency
@@ -99,6 +99,15 @@ end
     
     
 figure;
+quiver(0,0,k(1),k(2));
+hold on;
+scatter(r_all(:,1), r_all(:,2));
+axis([-.05 1.05 -.05 1.05]);
+title('Initial Setup');
+xlabel('x');
+ylabel('y');
+
+figure;
 for m=1:length(bkr)
     subplot(gridSize,gridSize,m);
     plot(t,real(E(m,:)));
@@ -108,12 +117,7 @@ for m=1:length(bkr)
     axis([0 t(end) -E_o E_o]);
 end
 
+% I might want to end up saving the resulting information to a data file so
+% that other parts of the DSP program can try to use the idealized output
+% form this file and test their algorithms.
 
-% figure;
-% quiver(0,0,k(1),k(2));
-% hold on;
-% scatter(r_all(:,1), r_all(:,2));
-% axis([-.05 1.05 -.05 1.05]);
-% title('Initial Setup');
-% xlabel('x');
-% ylabel('y');
