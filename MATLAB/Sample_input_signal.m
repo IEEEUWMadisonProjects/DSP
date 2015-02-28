@@ -117,9 +117,9 @@ for m=1:length(bkr)
     axis([0 t(end) -E_o E_o]);
 end
 
-% I might want to end up saving the resulting information to a data file so
-% that other parts of the DSP program can try to use the idealized output
-% form this file and test their algorithms.
+% Save real part of E-field to use in another script. This way we can
+% interpret the information independent of the set of data in this script.
+save('Sample_Antenna_Input.mat', 'E', 'a', 'omega', 'r_all', 'k');
 
 %% Plotting the Entire Plane Wave (t = 0)
 % This section will create a two dimensional grid and then use the
