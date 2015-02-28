@@ -9,10 +9,14 @@
 % understand how to interpret phase changes to find the direction of the
 % wave propagation.
 
+%Author: Alex Gabourie
+
 %% Initialize Workspace
 clear;
 close all;
 clc;
+
+runVideo = 0;
 
 %% Input Parameters
 %Frequency
@@ -126,32 +130,34 @@ save('Sample_Antenna_Input.mat', 'E', 'a', 'omega', 'r_all', 'k');
 % information selected above to create a three dimensional plot of the EM
 % wave
 
+if(runVideo == 1)
 
-%x and y coordinates
-x = linspace(0,2*a,100);
-y = linspace(0,2*a,100);
+    %x and y coordinates
+    x = linspace(0,2*a,100);
+    y = linspace(0,2*a,100);
 
-%new efield mesh to be calculated
-E2D = zeros(length(y), length(x));
+    %new efield mesh to be calculated
+    E2D = zeros(length(y), length(x));
 
-F(length(t)) = struct('cdata',[],'colormap',[]);
-h = figure;
+    F(length(t)) = struct('cdata',[],'colormap',[]);
+    h = figure;
 
-for p=1:length(t)
-    for m=1:length(x)
-        for n=1:length(y)
-           xy = [x(m),y(n)];
-           E2D(n,m) =  exp(1i*omega*t(p)-1i*beta*dot(k,xy));
-        end 
+    for p=1:length(t)
+        for m=1:length(x)
+            for n=1:length(y)
+               xy = [x(m),y(n)];
+               E2D(n,m) =  exp(1i*omega*t(p)-1i*beta*dot(k,xy));
+            end 
+        end
+
+        surf(x,y,real(E2D))
+        drawnow
+        set(h,'Renderer','zbuffer') %workaround for bug. 
+        F(p) = getframe(h);
     end
-    
-    surf(x,y,real(E2D))
-    drawnow
-    set(h,'Renderer','zbuffer') %workaround for bug. Not sure why it works
-    F(p) = getframe(h);
-end
 
-writerObj = VideoWriter('PlaneWave.mp4', 'MPEG-4');
-open(writerObj);
-writeVideo(writerObj, F);
-close(writerObj);
+    writerObj = VideoWriter('PlaneWave.mp4', 'MPEG-4');
+    open(writerObj);
+    writeVideo(writerObj, F);
+    close(writerObj);
+end
