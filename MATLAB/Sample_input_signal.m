@@ -10,9 +10,9 @@
 % wave propagation.
 
 %% Initialize Workspace
-% clear;
-% close all;
-% clc;
+clear;
+close all;
+clc;
 
 %% Input Parameters
 %Frequency
@@ -77,7 +77,7 @@ bkr = beta*[dot(k,r1);
 
 %want 5 periods of information collected
 T = 1/f;
-t = linspace(0,5*T, 1000); %time vector based on frequency
+t = linspace(0,5*T, 200); %time vector based on frequency
 
 %Electric field matrix initialized to num time steps & antennas
 E = zeros(length(bkr),length(t));
@@ -121,3 +121,37 @@ end
 % that other parts of the DSP program can try to use the idealized output
 % form this file and test their algorithms.
 
+%% Plotting the Entire Plane Wave (t = 0)
+% This section will create a two dimensional grid and then use the
+% information selected above to create a three dimensional plot of the EM
+% wave
+
+
+%x and y coordinates
+x = linspace(0,2*a,100);
+y = linspace(0,2*a,100);
+
+%new efield mesh to be calculated
+E2D = zeros(length(y), length(x));
+
+F(length(t)) = struct('cdata',[],'colormap',[]);
+h = figure;
+
+for p=1:length(t)
+    for m=1:length(x)
+        for n=1:length(y)
+           xy = [x(m),y(n)];
+           E2D(n,m) =  exp(1i*omega*t(p)-1i*beta*dot(k,xy));
+        end 
+    end
+    
+    surf(x,y,real(E2D))
+    drawnow
+    set(h,'Renderer','zbuffer') %workaround for bug. Not sure why it works
+    F(p) = getframe(h);
+end
+
+writerObj = VideoWriter('PlaneWave.mp4', 'MPEG-4');
+open(writerObj);
+writeVideo(writerObj, F);
+close(writerObj);
