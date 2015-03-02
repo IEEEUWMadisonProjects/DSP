@@ -53,7 +53,7 @@ r_all = [r1;r2;r3;r4];
 
 %Propagation direction (theta = 0 => dirction is from antenna 1 to 2 and 
 %   increasing theta moves counter-clockwise)
-theta = 2*pi*60/360; %[radians]
+theta = 2*pi*30/360; %[radians]
 
 %% Calculations
 
@@ -123,7 +123,8 @@ end
 
 % Save real part of E-field to use in another script. This way we can
 % interpret the information independent of the set of data in this script.
-save('Sample_Antenna_Input.mat', 'E', 'a', 'omega', 'r_all', 'k');
+save('Sample_Antenna_Input.mat', 'E', 'a', 'omega', 'r_all', 'k', 't', ...
+        'beta');
 
 %% Plotting the Entire Plane Wave (t = 0)
 % This section will create a two dimensional grid and then use the
