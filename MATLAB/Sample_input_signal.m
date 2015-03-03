@@ -34,27 +34,6 @@ mu_o = (4*pi)*10^(-7); %[H/m]
 mu_rel = 1;
 %recall that [F/m]*[H/m] = s^2/m^2 = 1/c
 
-%The four antennas will be placed in a square grid like:
-%  4    3
-%
-%  1    2
-%
-% The separation constant (like lattice constant) is 
-a = .3; %[m]
-
-%From this the positions of the antennas can be determined
-% r1 = [0+1, 0+1];
-% r2 = [a+1, 0+1];
-% r3 = [a+1, a+1];
-% r4 = [0+1, a+1];
-r1 = [0, 0];
-r2 = [a, 0];
-r3 = [a, a];
-r4 = [0, a];
-
-%For plotting
-r_all = [r1;r2;r3;r4];
-
 %Propagation direction (theta = 0 => dirction is from antenna 1 to 2 and 
 %   increasing theta moves counter-clockwise)
 theta = 2*pi*30/360; %[radians]
@@ -73,6 +52,25 @@ beta = omega*sqrt(mu*eps); %[m^-1]
 
 %wavelength for intuition purposes
 lambda = (2*pi)/beta;
+
+%The four antennas will be placed in a square grid like:
+%  4    3
+%
+%  1    2
+%
+% The separation constant (like lattice constant) is 
+a = .9*lambda/(4*sqrt(2)); %[m]
+%This constant is calculated to place the antennas an appropriate distance
+%away such that we can determine which antenna was hit first
+
+%From this the positions of the antennas can be determined
+r1 = [0, 0];
+r2 = [a, 0];
+r3 = [a, a];
+r4 = [0, a];
+
+%For plotting
+r_all = [r1;r2;r3;r4];
 
 %Propagation direction vector
 k = [1,0];
@@ -113,7 +111,6 @@ figure;
 quiver(0,0,k(1),k(2));
 hold on;
 scatter(r_all(:,1), r_all(:,2));
-%axis([-.05 1.05 -.05 1.05]);
 title('Initial Setup');
 xlabel('x');
 ylabel('y');
