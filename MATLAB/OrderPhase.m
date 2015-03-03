@@ -28,8 +28,8 @@ end
 
 %sort the data to its origninal order and return the new phases
 ord = (sortrows(ord',2)');
-if(max(ord(1,:))>pi)
-    ord(1,:) = ord(1,:) - (max(ord(1,:))-pi);
-end
+ord(1,:) = ord(1,:) - (ord(1,1));
 phaseRet = ord(1,:);
 
+
+end
