@@ -21,5 +21,6 @@ x1 = A_n\(A'*s1');
 % The input s1 will be the reference signal and the output phase shift will
 % be the phase of s2-s1.
 phaseShift = atan(x1(2)/x1(3));% - atan(x2(2)/x2(3));
+%phaseShift = atan2(x1(2),x1(3));
 
 end

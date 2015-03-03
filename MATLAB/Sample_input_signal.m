@@ -12,9 +12,9 @@
 %Author: Alex Gabourie
 
 %% Initialize Workspace
-clear;
-close all;
-clc;
+% clear;
+% close all;
+% clc;
 
 runVideo = 0;
 
