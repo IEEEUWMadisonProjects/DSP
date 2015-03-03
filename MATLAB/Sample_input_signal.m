@@ -40,9 +40,13 @@ mu_rel = 1;
 %  1    2
 %
 % The separation constant (like lattice constant) is 
-a = 1; %[m]
+a = .3; %[m]
 
 %From this the positions of the antennas can be determined
+% r1 = [0+1, 0+1];
+% r2 = [a+1, 0+1];
+% r3 = [a+1, a+1];
+% r4 = [0+1, a+1];
 r1 = [0, 0];
 r2 = [a, 0];
 r3 = [a, a];
@@ -66,6 +70,9 @@ mu = mu_o*mu_rel;
 
 %propagation constant
 beta = omega*sqrt(mu*eps); %[m^-1]
+
+%wavelength for intuition purposes
+lambda = (2*pi)/beta;
 
 %Propagation direction vector
 k = [1,0];
@@ -106,7 +113,7 @@ figure;
 quiver(0,0,k(1),k(2));
 hold on;
 scatter(r_all(:,1), r_all(:,2));
-axis([-.05 1.05 -.05 1.05]);
+%axis([-.05 1.05 -.05 1.05]);
 title('Initial Setup');
 xlabel('x');
 ylabel('y');
