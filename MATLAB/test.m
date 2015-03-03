@@ -1,11 +1,14 @@
 %% Test file
 
-%% Testing the PhaseShift Function
+%% Testing Finding Direction
+
+close all
+clear
 
 %Ensures we have the correct dataset to call the PhaseShift function
-if(exist('Sample_Antenna_Input.mat','file')==0)
+%if(exist('Sample_Antenna_Input.mat','file')==0)
     run('Sample_input_signal');
-end
+%end
 
 %close all
 %clear
@@ -19,6 +22,9 @@ bkr(1) = PhaseShift(real(E(1,:)), t, omega);
 bkr(2) = PhaseShift(real(E(2,:)), t, omega);
 bkr(3) = PhaseShift(real(E(3,:)), t, omega);
 bkr(4) = PhaseShift(real(E(4,:)), t, omega);
+bklook = bkr
+bkr = OrderPhase(bkr)
+
 %The bkr values we have now are actually beta*k*r, so we need to divide by
 %beta
 kr = bkr/beta;

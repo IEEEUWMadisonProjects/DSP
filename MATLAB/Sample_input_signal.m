@@ -36,7 +36,7 @@ mu_rel = 1;
 
 %Propagation direction (theta = 0 => dirction is from antenna 1 to 2 and 
 %   increasing theta moves counter-clockwise)
-theta = 2*pi*30/360; %[radians]
+theta = 2*pi*50/360; %[radians]
 
 %% Calculations
 
@@ -59,15 +59,15 @@ lambda = (2*pi)/beta;
 %  1    2
 %
 % The separation constant (like lattice constant) is 
-a = .9*lambda/(4*sqrt(2)); %[m]
+a = .9*lambda/(2*sqrt(2)); %[m]
 %This constant is calculated to place the antennas an appropriate distance
 %away such that we can determine which antenna was hit first
 
 %From this the positions of the antennas can be determined
-r1 = [0, 0];
-r2 = [a, 0];
-r3 = [a, a];
-r4 = [0, a];
+r1 = [0, 0]+1;
+r2 = [a, 0]+1;
+r3 = [a, a]+1;
+r4 = [0, a]+1;
 
 %For plotting
 r_all = [r1;r2;r3;r4];
@@ -115,20 +115,20 @@ title('Initial Setup');
 xlabel('x');
 ylabel('y');
 
-figure;
-for m=1:length(bkr)
-    subplot(gridSize,gridSize,m);
-    plot(t,real(E(m,:)));
-    title(['Antenna ' num2str(m)]);
-    xlabel('Time [S]');
-    ylabel('Amplitude [V/m]');
-    axis([0 t(end) -E_o E_o]);
-end
+% figure;
+% for m=1:length(bkr)
+%     subplot(gridSize,gridSize,m);
+%     plot(t,real(E(m,:)));
+%     title(['Antenna ' num2str(m)]);
+%     xlabel('Time [S]');
+%     ylabel('Amplitude [V/m]');
+%     axis([0 t(end) -E_o E_o]);
+% end
 
 % Save real part of E-field to use in another script. This way we can
 % interpret the information independent of the set of data in this script.
 save('Sample_Antenna_Input.mat', 'E', 'a', 'omega', 'r_all', 'k', 't', ...
-        'beta');
+        'beta', 'lambda');
 
 %% Plotting the Entire Plane Wave (t = 0)
 % This section will create a two dimensional grid and then use the
