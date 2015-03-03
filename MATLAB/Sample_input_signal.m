@@ -36,7 +36,7 @@ mu_rel = 1;
 
 %Propagation direction (theta = 0 => dirction is from antenna 1 to 2 and 
 %   increasing theta moves counter-clockwise)
-theta = 2*pi*55/360; %[radians]
+theta = 2*pi*10/360; %[radians]
 
 %% Calculations
 
@@ -93,7 +93,7 @@ E = zeros(length(bkr),length(t));
 
 for m=1:length(t)
     for n=1:length(bkr)
-        E(n,m) = exp(1i*(omega*t(m)-bkr(n)+23));
+        E(n,m) = exp(1i*(omega*t(m)-bkr(n)));
     end
 end
 

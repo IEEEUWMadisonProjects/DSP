@@ -1,4 +1,5 @@
 %% Test file
+% Author: Alex Gabourie
 
 %% Testing Finding Direction
 
@@ -29,10 +30,10 @@ bkr = OrderPhase(bkr);
 
 %The bkr values we have now are actually beta*k*r, so we need to divide by
 %beta
-kr = bkr/beta;
+kr = -bkr/beta;
 r_n = r_all'*r_all;
 knew = r_n\(r_all'*kr');
-knew = -knew/norm(knew);
+knew = knew/norm(knew);
 
 figure;
 quiver(0,0,knew(1),knew(2));

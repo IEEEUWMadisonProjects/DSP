@@ -4,7 +4,7 @@ function [ phaseRet ] = OrderPhase( phases )
 %   they are in the correct order. If not, it fixes the ordering. We are
 %   looking for differences between two phases that exceed pi/2 (quarter
 %   wavelength)
-
+%  Author: Alex Gabourie
 %ordered matrix
 ord = sortrows([phases;linspace(1,length(phases),length(phases))]',1)';
 
