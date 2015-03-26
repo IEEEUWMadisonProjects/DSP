@@ -9,3 +9,6 @@
 % should give me a relative phase shift which I can then use with my
 % original direction algorithm.
 
+run('Sample_input_signal');
+load('Sample_Antenna_Input.mat');
+
