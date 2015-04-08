@@ -86,7 +86,8 @@ bkr = beta*[dot(k,r1);
 
 %want 5 periods of information collected
 T = 1/f;
-t = linspace(0,5*T, 200); %time vector based on frequency
+numPeriods = 5;
+t = linspace(0,numPeriods*T, 200); %time vector based on frequency
 
 %Electric field matrix initialized to num time steps & antennas
 E = zeros(length(bkr),length(t));
