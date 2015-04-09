@@ -13,22 +13,24 @@ clear all;
 close all;
 clc;
 
+%%
+
 run('Sample_input_signal');
 load('Sample_Antenna_Input.mat');
+close all;
 
-
-Eref = zeros(1,length(t));
-for m=1:length(t)
+Eref = zeros(1,numTpoints);
+for m=1:numTpoints
         %Sine wave. Makes phase be zero
         Eref(m) = exp(1i*(omega*t(m)-pi/2));
 end
 
-figure;
-plot(t, real(Eref));
-axis([0 t(end) -E_o E_o]);
+% figure;
+% plot(t, real(Eref));
+% axis([0 t(end) -E_o E_o]);
 
-phsPts = floor(length(t)/numPeriods);
-phsPtMax = length(t)-phsPts;
+phsPts = floor(numTpoints/numPeriods);
+phsPtMax = numTpoints-phsPts;
 
 phase = zeros(1,phsPtMax);
 bkr = zeros(4,phsPtMax);
@@ -47,17 +49,20 @@ for i=1:4
     bkr(i,:) = unwrap(bkr(i,:));
 end
 
+% figure;
+% hold on;
+% plot(phase);
+% hold on
+% plot(bkr(1,:));
+% hold on
+% plot(bkr(2,:));
+% hold on
+% plot(bkr(3,:));
+% hold on
+% plot(bkr(4,:));
+
 figure;
-hold on;
-plot(phase);
-hold on
-plot(bkr(1,:));
-hold on
-plot(bkr(2,:));
-hold on
-plot(bkr(3,:));
-hold on
-plot(bkr(4,:));
+plot(bkr(1,:)-phase);
 
 
 %% Differece between phase section
@@ -70,38 +75,38 @@ Ecomb = [E(1,:),E(2,:),E(3,:),E(4,:)];
 figure;
 plot(real(Ecomb));
 
-t = linspace(0,numPeriods*T*4,numTpoints*4);
+t2 = 0:(t(2)-t(1)):numPeriods*T*4;
 
-Eref = zeros(1,length(t));
-for m=1:length(t)
+Eref2 = zeros(1,length(t2));
+for m=1:length(t2)
         %Sine wave. Makes phase be zero
-        Eref(m) = exp(1i*(omega*t(m)-pi/2));
+        Eref2(m) = exp(1i*(omega*t2(m)-pi/2));
 end
 
-figure;
-plot(t, real(Eref));
-axis([0 t(end) -E_o E_o]);
+% figure;
+% plot(t2, real(Eref));
+% axis([0 t2(end) -E_o E_o]);
 
-phsPts = floor(length(t)/(numPeriods*4));
-phsPtMax = length(t)-phsPts;
+phsPts = floor(length(t2)/(numPeriods*4));
+phsPtMax = length(t2)-phsPts;
 
 phase = zeros(1,phsPtMax);
-bkr = zeros(1,phsPtMax);
+bkr2 = zeros(1,phsPtMax);
 
 for i=1:phsPtMax
-    phase(i) = PhaseShift(real(Eref(i:(i+phsPts-1))),t(1:(phsPts))...
+    phase(i) = PhaseShift(real(Eref2(i:(i+phsPts-1))),t2(1:(phsPts))...
         ,omega);
-    bkr(i)= PhaseShift(real(Ecomb(i:(i+phsPts-1))),t(1:(phsPts))...
+    bkr2(i)= PhaseShift(real(Ecomb(i:(i+phsPts-1))),t2(1:(phsPts))...
            ,omega);
 end
 
 phase = unwrap(phase);
-bkr = unwrap(bkr);
+bkr2 = unwrap(bkr2);
 
 figure;
 plot(phase);
 hold on;
-plot(bkr,'g');
+plot(bkr2,'g');
 
 figure;
-plot(bkr-phase);
+plot(bkr2-phase);
