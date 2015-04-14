@@ -52,3 +52,35 @@ ylabel('y');
 % counter clockwise. My plan is to use the 2ms to determine how much of a
 % phase shift I would expect for the other antennas to have when I switch
 % to them.
+
+tVecIdx = zeros(1,3);
+
+%not best code, just want something to work
+%antenna 1 to 2 transition
+for i=1:length(t)
+    if t(i) > .002
+        tVecIdx(1) = i;
+        break;
+    end
+end
+%antenna 2 to 3 transition
+for i=tVecIdx(1):length(t)
+    if t(i) > .004
+        tVecIdx(2) = i;
+        break;
+    end
+end   
+%antenna 3 to 4 transition
+for i=tVecIdx(1):length(t)
+    if t(i) > .006
+        tVecIdx(3) = i;
+        break;
+    end
+end   
+    
+    
+    
+    
+    
+    
+    
