@@ -11,6 +11,13 @@
 
 %Author: Alex Gabourie
 
+%% EDIT
+%
+% This version is similar to the original file but some physical parameters
+% will be changed as well as vector sizes. My goal for this is to better
+% mimic the 20 ms recording times that we would expect for the actual
+% incoming signal
+
 %% Initialize Workspace
 clear;
 close all;
@@ -20,7 +27,7 @@ runVideo = 0;
 
 %% Input Parameters
 %Frequency
-f = 150e6; %[hz]
+f = 2551; %[hz] - measured from FFT of signal from gonzo file
 
 %E-field magnitude
 E_o = 1; %[V/m] Not used as of now
@@ -59,7 +66,7 @@ lambda = (2*pi)/beta;
 %  1    2
 %
 % The separation constant (like lattice constant) is 
-a = .9*lambda/(2*sqrt(2)); %[m]
+a = 1; %[m] - about what our antenna spacing is
 %This constant is calculated to place the antennas an appropriate distance
 %away such that we can determine which antenna was hit first
 
@@ -84,11 +91,10 @@ bkr = beta*[dot(k,r1);
             dot(k,r3);
             dot(k,r4)];
 
-%want 5 periods of information collected
+%want 20ms of info collected
 T = 1/f;
-numPeriods = 5;
-numTpoints = 200;
-t = linspace(0,numPeriods*T,numTpoints); %time vector based on frequency
+numTpoints = 48e3*.02; % samples/sec*seconds
+t = linspace(0,.02,numTpoints); %time vector based on frequency [s]
 
 %Electric field matrix initialized to num time steps & antennas
 E = zeros(length(bkr),length(t));
@@ -100,13 +106,13 @@ for m=1:length(t)
 end
 
 
-numPlots = length(bkr);
-gridSize = numPlots;
-if sqrt(numPlots)==floor(sqrt(numPlots))
-    gridSize = sqrt(numPlots);
-else
-    gridSize = floor(sqrt(numPlots))+1;
-end
+% numPlots = length(bkr);
+% gridSize = numPlots;
+% if sqrt(numPlots)==floor(sqrt(numPlots))
+%     gridSize = sqrt(numPlots);
+% else
+%     gridSize = floor(sqrt(numPlots))+1;
+% end
     
     
 figure;
@@ -117,54 +123,20 @@ title('Initial Setup');
 xlabel('x');
 ylabel('y');
 
-figure;
-for m=1:length(bkr)
-    subplot(gridSize,gridSize,m);
-    plot(t,real(E(m,:)));
-    title(['Antenna ' num2str(m)]);
-    xlabel('Time [S]');
-    ylabel('Amplitude [V/m]');
-    axis([0 t(end) -E_o E_o]);
-end
+% Plot works, no need for it anymore
+
+% figure;
+% for m=1:length(bkr)
+%     subplot(gridSize,gridSize,m);
+%     plot(t,real(E(m,:)));
+%     title(['Antenna ' num2str(m)]);
+%     xlabel('Time [S]');
+%     ylabel('Amplitude [V/m]');
+%     axis([0 t(end) -E_o E_o]);
+% end
 
 % Save real part of E-field to use in another script. This way we can
 % interpret the information independent of the set of data in this script.
-save('Sample_Antenna_Input.mat', 'E', 'a', 'omega', 'r_all', 'k', 't', ...
+save('Sample_Antenna_Input2.mat', 'E', 'a', 'omega', 'r_all', 'k', 't', ...
         'beta', 'lambda');
 
-%% Plotting the Entire Plane Wave (t = 0)
-% This section will create a two dimensional grid and then use the
-% information selected above to create a three dimensional plot of the EM
-% wave
-
-if(runVideo == 1)
-
-    %x and y coordinates
-    x = linspace(0,2*a,100);
-    y = linspace(0,2*a,100);
-
-    %new efield mesh to be calculated
-    E2D = zeros(length(y), length(x));
-
-    F(length(t)) = struct('cdata',[],'colormap',[]);
-    h = figure;
-
-    for p=1:length(t)
-        for m=1:length(x)
-            for n=1:length(y)
-               xy = [x(m),y(n)];
-               E2D(n,m) =  exp(1i*omega*t(p)-1i*beta*dot(k,xy));
-            end 
-        end
-
-        surf(x,y,real(E2D))
-        drawnow
-        set(h,'Renderer','zbuffer') %workaround for bug. 
-        F(p) = getframe(h);
-    end
-
-    writerObj = VideoWriter('PlaneWave.mp4', 'MPEG-4');
-    open(writerObj);
-    writeVideo(writerObj, F);
-    close(writerObj);
-end
