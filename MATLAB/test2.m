@@ -53,7 +53,7 @@ ylabel('y');
 % phase shift I would expect for the other antennas to have when I switch
 % to them.
 
-tVecIdx = zeros(1,3);
+tVecIdx = zeros(1,4);
 
 %not best code, just want something to work
 %antenna 1 to 2 transition
@@ -71,13 +71,19 @@ for i=tVecIdx(1):length(t)
     end
 end   
 %antenna 3 to 4 transition
-for i=tVecIdx(1):length(t)
+for i=tVecIdx(2):length(t)
     if t(i) > .006
         tVecIdx(3) = i;
         break;
     end
 end   
-    
+%antenna 4 to end transition
+for i=tVecIdx(3):length(t)
+    if t(i) > .008
+        tVecIdx(4) = i;
+        break;
+    end
+end     
     
     
     
