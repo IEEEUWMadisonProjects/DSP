@@ -74,6 +74,7 @@ Ecomb = [E(1,:),E(2,:),E(3,:),E(4,:)];
 
 figure;
 plot(real(Ecomb));
+axis([0 length(Ecomb) -4*E_o 4*E_o]);
 
 t2 = 0:(t(2)-t(1)):numPeriods*T*4;
 
@@ -83,9 +84,9 @@ for m=1:length(t2)
         Eref2(m) = exp(1i*(omega*t2(m)-pi/2));
 end
 
-% figure;
-% plot(t2, real(Eref));
-% axis([0 t2(end) -E_o E_o]);
+hold on;
+plot(t2, real(Eref2));
+%axis([0 t2(end) -E_o E_o]);
 
 phsPts = floor(length(t2)/(numPeriods*4));
 phsPtMax = length(t2)-phsPts;

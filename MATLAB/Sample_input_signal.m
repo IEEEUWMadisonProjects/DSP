@@ -36,7 +36,7 @@ mu_rel = 1;
 
 %Propagation direction (theta = 0 => dirction is from antenna 1 to 2 and 
 %   increasing theta moves counter-clockwise)
-theta = 2*pi*10/360; %[radians]
+theta = 2*pi*60/360; %[radians]
 
 %% Calculations
 
@@ -87,7 +87,7 @@ bkr = beta*[dot(k,r1);
 %want 5 periods of information collected
 T = 1/f;
 numPeriods = 5;
-numTpoints = 200;
+numTpoints = 5000;
 t = linspace(0,numPeriods*T,numTpoints); %time vector based on frequency
 
 %Electric field matrix initialized to num time steps & antennas
