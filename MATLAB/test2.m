@@ -53,7 +53,8 @@ if(input == 0)
 else
 %     Ein = 25*audioread('fourAntennaSnip.wav');
 %     Ein = audioread('1_36_1_Jason_Walk_single.wav');%2753
-    Ein = audioread('7_09_4_Jason_Walk_Single.wav'); %2683 Hz
+%     Ein = audioread('7_09_4_Jason_Walk_Single.wav'); %2683 Hz
+    Ein = audioread('10_12_3_Jason_Walk_Single.wav'); %
     omega = 2*pi*2683; %[rads/s]
     %want 20ms of info collected
     T = 2*pi/omega;
