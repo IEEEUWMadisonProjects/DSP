@@ -1,13 +1,16 @@
 %% Test file 2
 % Author: Alex Gabourie
 
-%% Testing Finding Direction
+
 
 close all
+clear;
+clc;
 
 % input=0 -> sample input signal, input!=0 -> .wav
 input = 1;
 
+%% Testing Finding Direction
 if(input == 0)
     %Ensures we have the correct dataset to call the PhaseShift function
     %if(exist('Sample_Antenna_Input.mat','file')==0)
@@ -18,6 +21,7 @@ if(input == 0)
     %clear
     %load relevant data
     load('Sample_Antenna_Input2.mat');
+    input = 0;
 
     % find Phase shift between two sample signals
     % First signal is reference signal
@@ -47,7 +51,40 @@ if(input == 0)
     ylabel('y');
 
 else
-    Ein = audioread('fourAntennaSnip.wav');
+%     Ein = 25*audioread('fourAntennaSnip.wav');
+%     Ein = audioread('1_36_1_Jason_Walk_single.wav');%2753
+    Ein = audioread('7_09_4_Jason_Walk_Single.wav'); %2683 Hz
+    omega = 2*pi*2683; %[rads/s]
+    %want 20ms of info collected
+    T = 2*pi/omega;
+    numTpoints = 48e3*.02; % samples/sec*seconds
+    t = linspace(0,.02,numTpoints); %time vector based on frequency [s]
+    
+    %Vacuum permittivity 
+    epsilon_o = 8.8541878176e-12; %[F/m]
+    epsilon_rel = 1;
+    %permeability
+    mu_o = (4*pi)*10^(-7); %[H/m]
+    mu_rel = 1;
+    
+    %permitivity & permeability (same units)
+    eps = epsilon_o*epsilon_rel;
+    mu = mu_o*mu_rel;
+
+    %propagation constant
+    beta = omega*sqrt(mu*eps); %[m^-1]
+    
+    % The separation constant (like lattice constant) is 
+    a = 1; %[m] - about what our antenna spacing is
+    %From this the positions of the antennas can be determined
+    r1 = [0, 0];
+    r2 = [a, 0];
+    r3 = [a, a];
+    r4 = [0, a];
+
+    %For plotting
+    r_all = [r1;r2;r3;r4];
+
 end
     
     
@@ -139,6 +176,7 @@ figure;
 plot(phaseDiff);
 title('Phase differences');    
 ylabel('Radians');
+axis([0 phsPtMax -3*pi 3*pi]);
 
 % At this point we should see the phase differences that correspond to a
 % particular direction and that resembles reality to a decent degree. Since
@@ -148,7 +186,9 @@ ylabel('Radians');
 
 % Obviously this needs to be done differently, but it is for proof of
 % concept
-bkr = [phaseDiff(32), phaseDiff(141), phaseDiff(235), phaseDiff(335)];
+% bkr = [phaseDiff(32), phaseDiff(141), phaseDiff(235), phaseDiff(335)];
+% bkr = [phaseDiff(26), phaseDiff(82), phaseDiff(160), phaseDiff(216)];
+bkr = [phaseDiff(26), phaseDiff(82), phaseDiff(144), phaseDiff(203)];
 
 %put the phases in the correct order and set the phase for first antenna to
 %be 0 for the system of equations to be solved.

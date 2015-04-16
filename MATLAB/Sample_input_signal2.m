@@ -43,7 +43,7 @@ mu_rel = 1;
 
 %Propagation direction (theta = 0 => dirction is from antenna 1 to 2 and 
 %   increasing theta moves counter-clockwise)
-theta = 2*pi*60/360; %[radians]
+theta = 2*pi*10/360; %[radians]
 
 %% Calculations
 
