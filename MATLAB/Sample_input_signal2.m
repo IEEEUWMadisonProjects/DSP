@@ -27,7 +27,7 @@ runVideo = 0;
 
 %% Input Parameters
 %Frequency
-f = 2551; %[hz] - measured from FFT of signal from gonzo file
+f = 150e6; %[hz]
 
 %E-field magnitude
 E_o = 1; %[V/m] Not used as of now

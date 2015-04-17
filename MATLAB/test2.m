@@ -53,8 +53,8 @@ if(input == 0)
 else
 %     Ein = 25*audioread('fourAntennaSnip.wav');
 %     Ein = audioread('1_36_1_Jason_Walk_single.wav');%2753
-%     Ein = audioread('7_09_4_Jason_Walk_Single.wav'); %2683 Hz
-    Ein = audioread('10_12_3_Jason_Walk_Single.wav'); %
+    Ein = audioread('7_09_4_Jason_Walk_Single.wav'); %2683 Hz
+%     Ein = audioread('10_12_3_Jason_Walk_Single.wav'); %2683
     omega = 2*pi*2683; %[rads/s]
     %want 20ms of info collected
     T = 2*pi/omega;
@@ -173,11 +173,22 @@ expPhase = unwrap(expPhase);
 % Phase differences
 phaseDiff = expPhase-realPhase;
 
-figure;
+
+figure1 = figure;
+% plot(t(1:length(phaseDiff))*1000, phaseDiff);
 plot(phaseDiff);
-title('Phase differences');    
-ylabel('Radians');
-axis([0 phsPtMax -3*pi 3*pi]);
+title('Phase Difference vs. Time','FontSize',14);    
+ylabel('Phase Difference [Rads]','FontSize',12);
+xlabel('Time [ms]','FontSize',12);
+% axis([0 phsPtMax -3*pi 3*pi]);
+% axis([0 phsPtMax 2 4]);
+% axis([0 t(length(phaseDiff))*1000 0 1.5*pi]);
+axis([0 phsPtMax 0 1.5*pi]);
+annotation(figure1,'textbox',...
+    [0.174214285714286 0.797619047619048 0.190071428571429 0.0666666666666721],...
+    'String',{'freq. = 2753 Hz'},...
+    'FitBoxToText','off',...
+    'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
 
 % At this point we should see the phase differences that correspond to a
 % particular direction and that resembles reality to a decent degree. Since
@@ -206,9 +217,11 @@ figure;
 quiver(0,0,knew(1),knew(2));
 hold on;
 scatter(r_all(:,1), r_all(:,2));
-title('Realistic Guessed Direction');
-xlabel('x');
-ylabel('y');
+title('Guessed Direction','FontSize',14);
+xlabel('x [m]','FontSize',14);
+ylabel('y [m]','FontSize',14);
+axis([-.6 1.1 -1 1.1]);
+
 
 %% Notes
 % I need to discuss with Tom how the signals are being recorded because I
