@@ -57,11 +57,11 @@ else
 %     Ein = audioread('10_12_3_Jason_Walk_Single.wav'); %2683
 
 %%%%%%% WedApr22 %%%%%%%%%%%%%%%%
-% Ein = audioread('Single_0deg.wav');omega = 2*pi*2612; %[rads/s]
+Ein = audioread('Single_0deg.wav');omega = 2*pi*2612; %[rads/s]
 % Ein = audioread('Single_30deg.wav');omega = 2*pi*2612; %[rads/s]
 % Ein = audioread('Single_60deg.wav');omega = 2*pi*2663; %[rads/s]
 % Ein = audioread('Single_90deg.wav');omega = 2*pi*2612; %[rads/s]
-Ein = audioread('Single_120deg.wav');omega = 2*pi*2700; %[rads/s]
+% Ein = audioread('Single_120deg.wav');omega = 2*pi*2700; %[rads/s]
 % Ein = audioread('Single_150deg.wav');omega = 2*pi*2700; %[rads/s]
 % Ein = audioread('Single_180deg.wav');omega = 2*pi*2715; %[rads/s]
 % Ein = audioread('Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
@@ -208,12 +208,12 @@ axis([0 phsPtMax min(phaseDiff)-padding max(phaseDiff)+padding ]);
 %     'FitBoxToText','off',...
 %     'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
 
-% figure2 = figure;
-% plot(expAmp);
-% title('Amplitude vs. Time','FontSize',14);    
-% ylabel('Amplitude [Arb]','FontSize',12);
-% xlabel('Time [ms]','FontSize',12);
-% axis([0 phsPtMax 0 1.15*max(expAmp)]);
+figure2 = figure;
+plot(expAmp);
+title('Amplitude vs. Time','FontSize',14);    
+ylabel('Amplitude [Arb]','FontSize',12);
+xlabel('Time [ms]','FontSize',12);
+axis([0 phsPtMax 0 1.15*max(expAmp)]);
 
 
 %%%%%%%%%%%%%%%%%%% Direction commented out until we determine if the phase
@@ -223,8 +223,6 @@ axis([0 phsPtMax min(phaseDiff)-padding max(phaseDiff)+padding ]);
 % this is an idealized situation, our phase difference plots have some
 % flat regions from which we can sample from.
 
-%%
-phsPtMax = 100;
 % For proof of concept. If number of points is large, this should be close
 % enough
 phsAveSize = floor(phsPtMax/8); %The number of points put in to the average 
@@ -240,6 +238,14 @@ bkr = [mean(phaseDiff(startIndex(4):(startIndex(4)+phsAveSize))),...
     mean(phaseDiff(startIndex(3):(startIndex(3)+phsAveSize))),...
     mean(phaseDiff(startIndex(2):(startIndex(2)+phsAveSize))),...
     mean(phaseDiff(startIndex(1):(startIndex(1)+phsAveSize)))];
+
+amp = [mean(expAmp(startIndex(4):(startIndex(4)+phsAveSize))),...
+    mean(expAmp(startIndex(3):(startIndex(3)+phsAveSize))),...
+    mean(expAmp(startIndex(2):(startIndex(2)+phsAveSize))),...
+    mean(expAmp(startIndex(1):(startIndex(1)+phsAveSize)))];
+
+%Find direction through using the amplitides
+ampOrd = sortrows([amp;linspace(length(amp),1,length(amp))]',1)';
 
 %put the phases in the correct order and set the phase for first antenna to
 %be 0 for the system of equations to be solved.

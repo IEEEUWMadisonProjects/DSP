@@ -33,3 +33,7 @@ phaseRet = ord(1,:);
 
 
 end
+
+% function [ phaseRet ] = OrderPhase(phases, amplitudes)
+%     
+% end
