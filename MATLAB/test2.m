@@ -57,17 +57,17 @@ else
 %     Ein = audioread('10_12_3_Jason_Walk_Single.wav'); %2683
 
 %%%%%%% WedApr22 %%%%%%%%%%%%%%%%
-Ein = audioread('Single_0deg.wav');
-% Ein = audioread('Single_30deg.wav');
-% Ein = audioread('Single_60deg.wav');
-% Ein = audioread('Single_90deg.wav');
-% Ein = audioread('Single_120deg.wav');
-% Ein = audioread('Single_150deg.wav');
-% Ein = audioread('Single_180deg.wav');
-% Ein = audioread('Single_210deg.wav');
+% Ein = audioread('Single_0deg.wav');omega = 2*pi*2612; %[rads/s]
+% Ein = audioread('Single_30deg.wav');omega = 2*pi*2612; %[rads/s]
+% Ein = audioread('Single_60deg.wav');omega = 2*pi*2663; %[rads/s]
+% Ein = audioread('Single_90deg.wav');omega = 2*pi*2612; %[rads/s]
+% Ein = audioread('Single_120deg.wav');omega = 2*pi*2700; %[rads/s]
+% Ein = audioread('Single_150deg.wav');omega = 2*pi*2700; %[rads/s]
+% Ein = audioread('Single_180deg.wav');omega = 2*pi*2715; %[rads/s]
+Ein = audioread('Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
 
 
-    omega = 2*pi*2612; %[rads/s]
+%     omega = 2*pi*2612; %[rads/s]
     %want 20ms of info collected
     T = 2*pi/omega;
     numTpoints = 48e3*.02; % samples/sec*seconds
@@ -158,11 +158,11 @@ for m=1:length(Ein)
 end
 
 %Plot the signals coming in from the antenna vs the reference signal
-figure;
-plot(Ein,'b');
-hold on;
-plot(Eref,'r');
-axis([0 length(Eref) -4 4]);
+% figure;
+% plot(Ein,'b');
+% hold on;
+% plot(Eref,'r');
+% axis([0 length(Eref) -4 4]);
     
 
 phsPts = floor(length(Eref)/(5*4));
@@ -199,14 +199,21 @@ xlabel('Time [ms]','FontSize',12);
 % axis([0 phsPtMax -3*pi 3*pi]);
 % axis([0 phsPtMax 2 4]);
 % axis([0 t(length(phaseDiff))*1000 0 1.5*pi]);
-axis([0 phsPtMax 0 2*pi]);
+padding = .15*max(abs(min(phaseDiff)),abs(max(phaseDiff)));
+
+axis([0 phsPtMax min(phaseDiff)-padding max(phaseDiff)+padding ]);
 % annotation(figure1,'textbox',...
 %     [0.174214285714286 0.797619047619048 0.190071428571429 0.0666666666666721],...
 %     'String',{'freq. = 2753 Hz'},...
 %     'FitBoxToText','off',...
 %     'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
 
-
+figure2 = figure;
+plot(expAmp);
+title('Amplitude vs. Time','FontSize',14);    
+ylabel('Amplitude [Arb]','FontSize',12);
+xlabel('Time [ms]','FontSize',12);
+axis([0 phsPtMax 0 1.15*max(expAmp)]);
 
 
 %%%%%%%%%%%%%%%%%%% Direction commented out until we determine if the phase

@@ -18,6 +18,6 @@ A_n = A'*A;
 x1 = A_n\(A'*s');
 %returns phase between -pi and pi
 phaseShift = atan2(x1(2),x1(3));
-amplitude = norm(x1(2),x1(3));
+amplitude = sqrt(x1(2)^2+x1(3)^2);
 
 end
