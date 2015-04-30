@@ -61,10 +61,10 @@ else
 % Ein = audioread('Single_30deg.wav');omega = 2*pi*2612; %[rads/s]
 % Ein = audioread('Single_60deg.wav');omega = 2*pi*2663; %[rads/s]
 % Ein = audioread('Single_90deg.wav');omega = 2*pi*2612; %[rads/s]
-% Ein = audioread('Single_120deg.wav');omega = 2*pi*2700; %[rads/s]
+Ein = audioread('Single_120deg.wav');omega = 2*pi*2700; %[rads/s]
 % Ein = audioread('Single_150deg.wav');omega = 2*pi*2700; %[rads/s]
 % Ein = audioread('Single_180deg.wav');omega = 2*pi*2715; %[rads/s]
-Ein = audioread('Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
+% Ein = audioread('Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
 
 
 %     omega = 2*pi*2612; %[rads/s]
@@ -158,11 +158,11 @@ for m=1:length(Ein)
 end
 
 %Plot the signals coming in from the antenna vs the reference signal
-% figure;
-% plot(Ein,'b');
-% hold on;
-% plot(Eref,'r');
-% axis([0 length(Eref) -4 4]);
+figure;
+plot(Ein,'b');
+hold on;
+plot(Eref,'r');
+axis([0 length(Eref) -4 4]);
     
 
 phsPts = floor(length(Eref)/(5*4));
@@ -208,47 +208,60 @@ axis([0 phsPtMax min(phaseDiff)-padding max(phaseDiff)+padding ]);
 %     'FitBoxToText','off',...
 %     'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
 
-figure2 = figure;
-plot(expAmp);
-title('Amplitude vs. Time','FontSize',14);    
-ylabel('Amplitude [Arb]','FontSize',12);
-xlabel('Time [ms]','FontSize',12);
-axis([0 phsPtMax 0 1.15*max(expAmp)]);
+% figure2 = figure;
+% plot(expAmp);
+% title('Amplitude vs. Time','FontSize',14);    
+% ylabel('Amplitude [Arb]','FontSize',12);
+% xlabel('Time [ms]','FontSize',12);
+% axis([0 phsPtMax 0 1.15*max(expAmp)]);
 
 
 %%%%%%%%%%%%%%%%%%% Direction commented out until we determine if the phase
 %%%%%%%%%%%%%%%%%%% method even makes sense
-% % At this point we should see the phase differences that correspond to a
-% % particular direction and that resembles reality to a decent degree. Since
-% % this is an idealized situation, our phase difference plots have some
-% % flat regions from which we can sample from.
-% 
-% 
-% % Obviously this needs to be done differently, but it is for proof of
-% % concept
-% % bkr = [phaseDiff(32), phaseDiff(141), phaseDiff(235), phaseDiff(335)];
-% % bkr = [phaseDiff(26), phaseDiff(82), phaseDiff(160), phaseDiff(216)];
-% bkr = [phaseDiff(26), phaseDiff(82), phaseDiff(144), phaseDiff(203)];
-% 
-% %put the phases in the correct order and set the phase for first antenna to
-% %be 0 for the system of equations to be solved.
-% bkr = OrderPhase(bkr);
-% 
-% %The bkr values we have now are actually beta*k*r, so we need to divide by
-% %beta
-% kr = -bkr/beta;
-% r_n = r_all'*r_all;
-% knew = r_n\(r_all'*kr');
-% knew = knew/norm(knew);
-% 
-% figure;
-% quiver(0,0,knew(1),knew(2));
-% hold on;
-% scatter(r_all(:,1), r_all(:,2));
-% title('Guessed Direction','FontSize',14);
-% xlabel('x [m]','FontSize',14);
-% ylabel('y [m]','FontSize',14);
-% axis([-.6 1.1 -1 1.1]);
+% At this point we should see the phase differences that correspond to a
+% particular direction and that resembles reality to a decent degree. Since
+% this is an idealized situation, our phase difference plots have some
+% flat regions from which we can sample from.
+
+%%
+phsPtMax = 100;
+% For proof of concept. If number of points is large, this should be close
+% enough
+phsAveSize = floor(phsPtMax/8); %The number of points put in to the average 
+                                % that gives us our phase for each antenna
+
+startIndex = zeros(1,4);
+for i=1:4
+    startIndex(i) = floor(phsPtMax/4)*i-floor(phsAveSize*1.5);
+end
+% Since the antennas are switched from 4,3,2,1 we need to reverse the order
+% of our start indexes  and then use those in the bkr stuff.
+bkr = [mean(phaseDiff(startIndex(4):(startIndex(4)+phsAveSize))),...
+    mean(phaseDiff(startIndex(3):(startIndex(3)+phsAveSize))),...
+    mean(phaseDiff(startIndex(2):(startIndex(2)+phsAveSize))),...
+    mean(phaseDiff(startIndex(1):(startIndex(1)+phsAveSize)))];
+
+%put the phases in the correct order and set the phase for first antenna to
+%be 0 for the system of equations to be solved.
+bkr = OrderPhase(bkr);
+
+%The bkr values we have now are actually beta*k*r, so we need to divide by
+%beta
+kr = -bkr/beta;
+r_n = r_all'*r_all;
+knew = r_n\(r_all'*kr');
+knew = knew/norm(knew);
+
+figure;
+quiver(0,0,knew(1),knew(2));
+hold on; 
+quiver(0,0,-4,-4);
+hold on;
+scatter(r_all(:,1), r_all(:,2));
+title('Guessed Direction','FontSize',14);
+xlabel('x [m]','FontSize',14);
+ylabel('y [m]','FontSize',14);
+axis([-1 1.1 -1 1.1]);
 
 
 %% Notes
