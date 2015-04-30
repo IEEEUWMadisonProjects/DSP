@@ -57,15 +57,29 @@ else
 %     Ein = audioread('10_12_3_Jason_Walk_Single.wav'); %2683
 
 %%%%%%% WedApr22 %%%%%%%%%%%%%%%%
-Ein = audioread('Single_0deg.wav');omega = 2*pi*2612; %[rads/s]
-% Ein = audioread('Single_30deg.wav');omega = 2*pi*2612; %[rads/s]
-% Ein = audioread('Single_60deg.wav');omega = 2*pi*2663; %[rads/s]
-% Ein = audioread('Single_90deg.wav');omega = 2*pi*2612; %[rads/s]
-% Ein = audioread('Single_120deg.wav');omega = 2*pi*2700; %[rads/s]
-% Ein = audioread('Single_150deg.wav');omega = 2*pi*2700; %[rads/s]
-% Ein = audioread('Single_180deg.wav');omega = 2*pi*2715; %[rads/s]
-% Ein = audioread('Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
+% Ein = audioread('Single_0deg.wav');omega = 2*pi*2612; %[rads/s]
+% angle = 0;
 
+% Ein = audioread('Single_30deg.wav');omega = 2*pi*2612; %[rads/s]
+% angle = 30;
+
+% Ein = audioread('Single_60deg.wav');omega = 2*pi*2663; %[rads/s]
+% angle = 60;
+
+% Ein = audioread('Single_90deg.wav');omega = 2*pi*2612; %[rads/s]
+% angle = 90;
+
+% Ein = audioread('Single_120deg.wav');omega = 2*pi*2700; %[rads/s]
+% angle = 120;
+
+% Ein = audioread('Single_150deg.wav');omega = 2*pi*2700; %[rads/s]
+% angle = 150;
+
+% Ein = audioread('Single_180deg.wav');omega = 2*pi*2715; %[rads/s]
+% angle = 180;
+
+% Ein = audioread('Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
+% angle = 210;
 
 %     omega = 2*pi*2612; %[rads/s]
     %want 20ms of info collected
@@ -245,7 +259,14 @@ amp = [mean(expAmp(startIndex(4):(startIndex(4)+phsAveSize))),...
     mean(expAmp(startIndex(1):(startIndex(1)+phsAveSize)))];
 
 %Find direction through using the amplitides
-ampOrd = sortrows([amp;linspace(length(amp),1,length(amp))]',1)';
+alpha = 1.9521; %an empirically found attenuation constant
+% ampOrd = sortrows([amp;linspace(length(amp),1,length(amp))]',1)';
+%B*exp(-alpha*dot(k,r)) = C where C is amp
+B = max(amp);
+linAmp = log(amp/B)./(-alpha);
+r_n = r_all'*r_all;
+knew2 = r_n\(r_all'*linAmp');
+knew2 = -knew2/norm(knew2);
 
 %put the phases in the correct order and set the phase for first antenna to
 %be 0 for the system of equations to be solved.
@@ -254,20 +275,22 @@ bkr = OrderPhase(bkr);
 %The bkr values we have now are actually beta*k*r, so we need to divide by
 %beta
 kr = -bkr/beta;
-r_n = r_all'*r_all;
 knew = r_n\(r_all'*kr');
 knew = knew/norm(knew);
 
-figure;
+figure3 = figure;
 quiver(0,0,knew(1),knew(2));
 hold on; 
-quiver(0,0,-4,-4);
+quiver(0,0,knew2(1),knew2(2));
 hold on;
 scatter(r_all(:,1), r_all(:,2));
 title('Guessed Direction','FontSize',14);
 xlabel('x [m]','FontSize',14);
 ylabel('y [m]','FontSize',14);
-axis([-1 1.1 -1 1.1]);
+axis([-1 2 -1 2]);
+legend('on');
+legend('Phase', 'Amplitude');
+createAntennaTextBox(figure3);
 
 
 %% Notes
