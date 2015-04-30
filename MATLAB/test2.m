@@ -12,7 +12,7 @@ input = 1;
 
 %% Testing Finding Direction
 if(input == 0)
-    %Ensures we have the correct dataset to call the PhaseShift function
+    %Ensures we have the correct dataset to call the sineFit function
     %if(exist('Sample_Antenna_Input.mat','file')==0)
         run('Sample_input_signal2');
     %end
@@ -26,10 +26,10 @@ if(input == 0)
     % find Phase shift between two sample signals
     % First signal is reference signal
     bkr = zeros(1,4);
-    bkr(1) = PhaseShift(real(E(1,:)), t, omega);
-    bkr(2) = PhaseShift(real(E(2,:)), t, omega);
-    bkr(3) = PhaseShift(real(E(3,:)), t, omega);
-    bkr(4) = PhaseShift(real(E(4,:)), t, omega);
+    bkr(1) = sineFit(real(E(1,:)), t, omega);
+    bkr(2) = sineFit(real(E(2,:)), t, omega);
+    bkr(3) = sineFit(real(E(3,:)), t, omega);
+    bkr(4) = sineFit(real(E(4,:)), t, omega);
 
     %put the phases in the correct order and set the phase for first 
     %antenna to be 0 for the system of equations to be solved.
@@ -53,9 +53,21 @@ if(input == 0)
 else
 %     Ein = 25*audioread('fourAntennaSnip.wav');
 %     Ein = audioread('1_36_1_Jason_Walk_single.wav');%2753
-    Ein = audioread('7_09_4_Jason_Walk_Single.wav'); %2683 Hz
+%    Ein = audioread('7_09_4_Jason_Walk_Single.wav'); %2683 Hz
 %     Ein = audioread('10_12_3_Jason_Walk_Single.wav'); %2683
-    omega = 2*pi*2683; %[rads/s]
+
+%%%%%%% WedApr22 %%%%%%%%%%%%%%%%
+Ein = audioread('Single_0deg.wav');
+% Ein = audioread('Single_30deg.wav');
+% Ein = audioread('Single_60deg.wav');
+% Ein = audioread('Single_90deg.wav');
+% Ein = audioread('Single_120deg.wav');
+% Ein = audioread('Single_150deg.wav');
+% Ein = audioread('Single_180deg.wav');
+% Ein = audioread('Single_210deg.wav');
+
+
+    omega = 2*pi*2612; %[rads/s]
     %want 20ms of info collected
     T = 2*pi/omega;
     numTpoints = 48e3*.02; % samples/sec*seconds
@@ -156,14 +168,18 @@ axis([0 length(Eref) -4 4]);
 phsPts = floor(length(Eref)/(5*4));
 phsPtMax = length(Eref)-phsPts;
 
+%phase from reference sine wave
 realPhase = zeros(1,phsPtMax);
+% experimental phase
 expPhase = zeros(1,phsPtMax);
+expAmp = zeros(1,phsPtMax);%to get amplitude plot much like the phase
+
 
 for i=1:phsPtMax
-    realPhase(i) = PhaseShift(real(Eref(i:(i+phsPts-1))),t(1:(phsPts))...
+    realPhase(i) = sineFit(real(Eref(i:(i+phsPts-1))),t(1:(phsPts))...
         ,omega);
-    expPhase(i)= PhaseShift(real(Ein(i:(i+phsPts-1))),t(1:(phsPts))...
-           ,omega);
+    [expPhase(i),expAmp(i)] = sineFit(real(Ein(i:(i+phsPts-1))),...
+        t(1:(phsPts)),omega);
 end
 
 %unwrap phases to get the phase difference plot
@@ -183,44 +199,49 @@ xlabel('Time [ms]','FontSize',12);
 % axis([0 phsPtMax -3*pi 3*pi]);
 % axis([0 phsPtMax 2 4]);
 % axis([0 t(length(phaseDiff))*1000 0 1.5*pi]);
-axis([0 phsPtMax 0 1.5*pi]);
-annotation(figure1,'textbox',...
-    [0.174214285714286 0.797619047619048 0.190071428571429 0.0666666666666721],...
-    'String',{'freq. = 2753 Hz'},...
-    'FitBoxToText','off',...
-    'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
-
-% At this point we should see the phase differences that correspond to a
-% particular direction and that resembles reality to a decent degree. Since
-% this is an idealized situation, our phase difference plots have some
-% flat regions from which we can sample from.
+axis([0 phsPtMax 0 2*pi]);
+% annotation(figure1,'textbox',...
+%     [0.174214285714286 0.797619047619048 0.190071428571429 0.0666666666666721],...
+%     'String',{'freq. = 2753 Hz'},...
+%     'FitBoxToText','off',...
+%     'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
 
 
-% Obviously this needs to be done differently, but it is for proof of
-% concept
-% bkr = [phaseDiff(32), phaseDiff(141), phaseDiff(235), phaseDiff(335)];
-% bkr = [phaseDiff(26), phaseDiff(82), phaseDiff(160), phaseDiff(216)];
-bkr = [phaseDiff(26), phaseDiff(82), phaseDiff(144), phaseDiff(203)];
 
-%put the phases in the correct order and set the phase for first antenna to
-%be 0 for the system of equations to be solved.
-bkr = OrderPhase(bkr);
 
-%The bkr values we have now are actually beta*k*r, so we need to divide by
-%beta
-kr = -bkr/beta;
-r_n = r_all'*r_all;
-knew = r_n\(r_all'*kr');
-knew = knew/norm(knew);
-
-figure;
-quiver(0,0,knew(1),knew(2));
-hold on;
-scatter(r_all(:,1), r_all(:,2));
-title('Guessed Direction','FontSize',14);
-xlabel('x [m]','FontSize',14);
-ylabel('y [m]','FontSize',14);
-axis([-.6 1.1 -1 1.1]);
+%%%%%%%%%%%%%%%%%%% Direction commented out until we determine if the phase
+%%%%%%%%%%%%%%%%%%% method even makes sense
+% % At this point we should see the phase differences that correspond to a
+% % particular direction and that resembles reality to a decent degree. Since
+% % this is an idealized situation, our phase difference plots have some
+% % flat regions from which we can sample from.
+% 
+% 
+% % Obviously this needs to be done differently, but it is for proof of
+% % concept
+% % bkr = [phaseDiff(32), phaseDiff(141), phaseDiff(235), phaseDiff(335)];
+% % bkr = [phaseDiff(26), phaseDiff(82), phaseDiff(160), phaseDiff(216)];
+% bkr = [phaseDiff(26), phaseDiff(82), phaseDiff(144), phaseDiff(203)];
+% 
+% %put the phases in the correct order and set the phase for first antenna to
+% %be 0 for the system of equations to be solved.
+% bkr = OrderPhase(bkr);
+% 
+% %The bkr values we have now are actually beta*k*r, so we need to divide by
+% %beta
+% kr = -bkr/beta;
+% r_n = r_all'*r_all;
+% knew = r_n\(r_all'*kr');
+% knew = knew/norm(knew);
+% 
+% figure;
+% quiver(0,0,knew(1),knew(2));
+% hold on;
+% scatter(r_all(:,1), r_all(:,2));
+% title('Guessed Direction','FontSize',14);
+% xlabel('x [m]','FontSize',14);
+% ylabel('y [m]','FontSize',14);
+% axis([-.6 1.1 -1 1.1]);
 
 
 %% Notes

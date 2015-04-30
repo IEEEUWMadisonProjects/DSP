@@ -6,7 +6,7 @@
 close all
 
 
-%Ensures we have the correct dataset to call the PhaseShift function
+%Ensures we have the correct dataset to call the sineFit function
 %if(exist('Sample_Antenna_Input.mat','file')==0)
     run('Sample_input_signal');
 %end
@@ -19,10 +19,10 @@ load('Sample_Antenna_Input.mat');
 % find Phase shift between two sample signals
 % First signal is reference signal
 bkr = zeros(1,4);
-bkr(1) = PhaseShift(real(E(1,:)), t, omega);
-bkr(2) = PhaseShift(real(E(2,:)), t, omega);
-bkr(3) = PhaseShift(real(E(3,:)), t, omega);
-bkr(4) = PhaseShift(real(E(4,:)), t, omega);
+bkr(1) = sineFit(real(E(1,:)), t, omega);
+bkr(2) = sineFit(real(E(2,:)), t, omega);
+bkr(3) = sineFit(real(E(3,:)), t, omega);
+bkr(4) = sineFit(real(E(4,:)), t, omega);
 
 %put the phases in the correct order and set the phase for first antenna to
 %be 0 for the system of equations to be solved.
