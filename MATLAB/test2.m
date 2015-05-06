@@ -264,6 +264,7 @@ alpha = 1.9521; %an empirically found attenuation constant
 %B*exp(-alpha*dot(k,r)) = C where C is amp
 B = max(amp);
 linAmp = log(amp/B)./(-alpha);
+% linAmp = amp;
 r_n = r_all'*r_all;
 knew2 = r_n\(r_all'*linAmp');
 knew2 = -knew2/norm(knew2);
