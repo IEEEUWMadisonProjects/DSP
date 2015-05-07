@@ -63,8 +63,8 @@ else
 % Ein = audioread('apr22/Single_30deg.wav');omega = 2*pi*2612; %[rads/s]
 % angle = 30;
 
-Ein = audioread('apr22/Single_60deg.wav');omega = 2*pi*2663; %[rads/s]
-angle = 60;
+% Ein = audioread('apr22/Single_60deg.wav');omega = 2*pi*2663; %[rads/s]
+% angle = 60;
 
 % Ein = audioread('apr22/Single_90deg.wav');omega = 2*pi*2612; %[rads/s]
 % angle = 90;
@@ -74,14 +74,16 @@ angle = 60;
 
 % Ein = audioread('apr22/Single_150deg.wav');omega = 2*pi*2700; %[rads/s]
 % angle = 150;
-
+% 
 % Ein = audioread('apr22/Single_180deg.wav');omega = 2*pi*2715; %[rads/s]
 % angle = 180;
 
 % Ein = audioread('apr22/Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
 % angle = 210;
 
-%     omega = 2*pi*2612; %[rads/s]
+
+
+    omega = 2*pi*2612; %[rads/s]
     %want 20ms of info collected
     T = 2*pi/omega;
     numTpoints = 48e3*.02; % samples/sec*seconds
@@ -222,12 +224,12 @@ phaseDiff = expPhase-realPhase;
 % %     'FitBoxToText','off',...
 % %     'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
 
-figure2 = figure;
-plot(expAmp);
-title('Amplitude vs. Time','FontSize',14);    
-ylabel('Amplitude [Arb]','FontSize',12);
-xlabel('Time [ms]','FontSize',12);
-axis([0 phsPtMax 0 1.15*max(expAmp)]);
+% figure2 = figure;
+% plot(expAmp);
+% title('Amplitude vs. Time','FontSize',14);    
+% ylabel('Amplitude [Arb]','FontSize',12);
+% xlabel('Time [ms]','FontSize',12);
+% axis([0 phsPtMax 0 1.15*max(expAmp)]);
 
 
 %%%%%%%%%%%%%%%%%%% Direction commented out until we determine if the phase
@@ -279,20 +281,26 @@ antNum = [1,2,3,4,1]; %Didn't feel like making circular buffer
 
 sign = 1;
 
-if antNum(ampOrd(2,4)+1)==ampOrd(2,3)
-    sign = -1;
+% if antNum(ampOrd(2,4)+1)==ampOrd(2,3)
+%     sign = -1;
+% end
+if (ampOrd(2,4)==1 && ampOrd(2,3)==4) || ...
+   (ampOrd(2,4)==2 && ampOrd(2,3)==1) || ...
+   (ampOrd(2,4)==3 && ampOrd(2,3)==2) || ...
+   (ampOrd(2,4)==4 && ampOrd(2,3)==3)
+
+    sign=-1;
 end
 
 topSig = ampOrd(1,4)-ampOrd(1,2);
 secondSig = ampOrd(1,3)-ampOrd(1,2);
 
 inAngle = (center+90*sign*(secondSig/(topSig+secondSig)));
-inAngle-45
 inAngle = inAngle*pi/180;
 
 knew3 = [1,0];
 rot = [cos(inAngle),-sin(inAngle);sin(inAngle),cos(inAngle)];
-knew3 = (rot*knew3')';
+knew3 = -(rot*knew3')';
 
 %%% ATTENUATION METHOD 
 %%%%% DIDN'T WORK
@@ -312,6 +320,13 @@ knew3 = (rot*knew3')';
 % %be 0 for the system of equations to be solved.
 % bkr = OrderPhase(bkr);
 % 
+
+%Get line segments for axis to relate to Tom's figures
+line13x = [r1(1) r3(1)];
+line13y = [r1(2) r3(2)];
+line24x = [r2(1) r4(1)];
+line24y = [r2(2) r4(2)];
+
 % %The bkr values we have now are actually beta*k*r, so we need to divide by
 % %beta
 % kr = -bkr/beta;
@@ -323,16 +338,21 @@ figure3 = figure;
 % hold on; 
 % quiver(0,0,knew2(1),knew2(2));
 % hold on;
+plot(line13x,line13y);
+hold on
+plot(line24x,line24y);
+hold on
 scatter(r_all(:,1), r_all(:,2));
 title('Guessed Direction','FontSize',14);
 xlabel('x [m]','FontSize',14);
 ylabel('y [m]','FontSize',14);
-quiver(0,0,knew3(1),knew3(2));
+quiver(a/2,a/2,knew3(1),knew3(2));
 hold on;
 axis([-1 2 -1 2]);
 legend('on');
 legend('Phase', 'Amplitude');
 createAntennaTextBox(figure3);
+set(figure3, 'Position', [200, 200, 800, 800]);
 
 
 %% Notes
