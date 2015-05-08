@@ -3,9 +3,9 @@
 
 
 
-close all
-clear;
-clc;
+% close all
+% clear;
+% clc;
 
 % input=0 -> sample input signal, input!=0 -> .wav
 input = 1;
@@ -57,8 +57,8 @@ else
 %     Ein = audioread('10_12_3_Jason_Walk_Single.wav'); %2683
 
 %%%%%%% WedApr22 %%%%%%%%%%%%%%%%
-% Ein = audioread('apr22/Single_0deg.wav');omega = 2*pi*2612; %[rads/s]
-% angle = 0;
+Ein = audioread('apr22/Single_0deg.wav');omega = 2*pi*2612; %[rads/s]
+angle = 0;
 
 % Ein = audioread('apr22/Single_30deg.wav');omega = 2*pi*2612; %[rads/s]
 % angle = 30;
@@ -81,7 +81,7 @@ else
 % Ein = audioread('apr22/Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
 % angle = 210;
 
-% Ein = audioread('May_1_4Ant/gqrx_A15.wav');omega = 2*pi*2503; %[rads/s]
+% Ein = audioread('May_1_4Ant/gqrx_A0.wav');omega = 2*pi*2503; %[rads/s]
 % angle = 0;
 % Ein = Ein(50:end);
 
@@ -167,7 +167,7 @@ if(input == 0)
         real(E(3,tVecIdx(2):tVecIdx(3)-1)),...
         real(E(4,tVecIdx(3):tVecIdx(4)-1))];
 end
-    
+
 Eref = zeros(1,length(Ein));
 for m=1:length(Ein)
         %Sine wave. Makes phase be zero
@@ -207,16 +207,17 @@ expPhase = unwrap(expPhase);
 phaseDiff = expPhase-realPhase;
 
 
-% figure1 = figure;
-% % plot(t(1:length(phaseDiff))*1000, phaseDiff);
-% plot(phaseDiff);
-% title('Phase Difference vs. Time','FontSize',14);    
-% ylabel('Phase Difference [Rads]','FontSize',12);
-% xlabel('Time [ms]','FontSize',12);
-% % axis([0 phsPtMax -3*pi 3*pi]);
-% % axis([0 phsPtMax 2 4]);
-% % axis([0 t(length(phaseDiff))*1000 0 1.5*pi]);
-% padding = .15*max(abs(min(phaseDiff)),abs(max(phaseDiff)));
+figure1 = figure;
+% plot(t(1:length(phaseDiff))*1000, phaseDiff);
+plot(phaseDiff);
+title('Phase Difference vs. Time','FontSize',14);    
+ylabel('Phase Difference [Rads]','FontSize',12);
+xlabel('Time [ms]','FontSize',12);
+% axis([0 phsPtMax -3*pi 3*pi]);
+% axis([0 phsPtMax 2 4]);
+% axis([0 t(length(phaseDiff))*1000 0 1.5*pi]);
+padding = .15*max(abs(min(phaseDiff)),abs(max(phaseDiff)));
+set(figure1, 'Position', [1000, 200, 800, 600]);
 
 % axis([0 phsPtMax min(phaseDiff)-padding max(phaseDiff)+padding ]);
 % annotation(figure1,'textbox',...
@@ -225,12 +226,13 @@ phaseDiff = expPhase-realPhase;
 %     'FitBoxToText','off',...
 %     'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
 
-% figure2 = figure;
-% plot(expAmp);
-% title('Amplitude vs. Time','FontSize',14);    
-% ylabel('Amplitude [Arb]','FontSize',12);
-% xlabel('Time [ms]','FontSize',12);
-% axis([0 phsPtMax 0 1.15*max(expAmp)]);
+figure2 = figure;
+plot(expAmp);
+title('Amplitude vs. Time','FontSize',14);    
+ylabel('Amplitude [Arb]','FontSize',12);
+xlabel('Time [ms]','FontSize',12);
+axis([0 phsPtMax 0 1.15*max(expAmp)]);
+set(figure2, 'Position', [100, 200, 800, 600]);
 
 
 %%%%%%%%%%%%%%%%%%% Direction commented out until we determine if the phase
@@ -339,24 +341,24 @@ line24y = [r2(2) r4(2)];
 % knew = r_n\(r_all'*kr');
 % knew = knew/norm(knew);
 
-% figure3 = figure;
-% % quiver(0,0,knew(1),knew(2));
-% % hold on; 
-% % quiver(0,0,knew2(1),knew2(2));
-% % hold on;
-% plot(line13x,line13y);
-% hold on
-% plot(line24x,line24y);
-% hold on
-% scatter(r_all(:,1), r_all(:,2));
-% title('Guessed Direction','FontSize',14);
-% xlabel('x [m]','FontSize',14);
-% ylabel('y [m]','FontSize',14);
-% quiver(a/2,a/2,knew3(1),knew3(2));
+figure3 = figure;
+% quiver(0,0,knew(1),knew(2));
+% hold on; 
+% quiver(0,0,knew2(1),knew2(2));
 % hold on;
-% axis([-1 2 -1 2]);
-% createAntennaTextBox(figure3);
-% set(figure3, 'Position', [200, 200, 800, 800]);
+plot(line13x,line13y);
+hold on
+plot(line24x,line24y);
+hold on
+scatter(r_all(:,1), r_all(:,2));
+title('Guessed Direction','FontSize',14);
+xlabel('x [m]','FontSize',14);
+ylabel('y [m]','FontSize',14);
+quiver(a/2,a/2,knew3(1),knew3(2));
+hold on;
+axis([-1 2 -1 2]);
+createAntennaTextBox(figure3);
+set(figure3, 'Position', [200, 200, 800, 800]);
 
 
 %% Notes

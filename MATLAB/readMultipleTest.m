@@ -3,13 +3,21 @@
 % Author: Alex Gabourie
 % Reading multiple files and test their direction
 %% Initialize workspace
-close all
-clear;
-clc;
+% close all
+% clear;
+% clc;
 
 %% User input parameters
 %The folder in which all of the wav files are found
-folderName = '.\May_1_4Ant';
+folderNum = 1;
+
+if folderNum==0
+    folderName = '.\May_1_4Ant';
+    throwAwayPoints = 50;
+elseif folderNum==1
+    folderName = '.\apr22';
+    throwAwayPoints = 0;
+end
 
 %number of antennas used in signal
 numAnt = 4;
@@ -23,7 +31,7 @@ filesList = dir([folderName '\*.wav']);
 %antenna reading. In this case list the number of points to throw out from
 %the wav file in the beginning
 
-throwAwayPoints = 50;
+
 
 %% Constant parameters
     
@@ -52,9 +60,11 @@ throwAwayPoints = 50;
 %% File Loop
     
 for fileNum=1:1%length(filesList)
-    file = [folderName '\' filesList(fileNum).name];
+    file = [folderName '\' filesList(fileNum).name]
     Ein = audioread(file); 
-    Ein = Ein(throwAwayPoints:end);
+    Ein = Ein(throwAwayPoints+1:end,:);
+
+    
     % The DTFT (FFT) yields a continuous spectrum of frequencies that we
     % must sample to get a finite, representable number of frequencies in
     % the computer. However, you can choose the number of points you want
@@ -65,10 +75,10 @@ for fileNum=1:1%length(filesList)
     [val, idx] = max(abs(EinFFT(1:floor(NFFT/2))));
     freq = idx*2*pi/(NFFT*2*pi)*48000
     freqString = num2str(floor(freq));
-    figure
-    plot(abs(EinFFT))
+    %figure
+    %plot(abs(EinFFT))
     f = 48000/2*linspace(0,1,NFFT/2+1);
-    omega = 2*pi*2503;
+    omega = 2*pi*2612;
     
     %want 20ms of info collected
     T = 2*pi/omega;
@@ -207,12 +217,13 @@ for fileNum=1:1%length(filesList)
     xlabel('Time [ms]','FontSize',12);
     padding = .15*max(abs(min(phaseDiff)),abs(max(phaseDiff)));
     axis([0 phsPtMax min(phaseDiff)-padding max(phaseDiff)+padding ]);
-    annotation(figure1,'textbox',...
-        [0.174214285714286 0.797619047619048 0.190071428571429 ...
-        0.0666666666666721],'String',{['f = ' freqString ' Hz']},...
-        'FitBoxToText','off',...
-        'EdgeColor',[0.941176474094391 0.941176474094391 ...
-        0.941176474094391]);
+    set(figure1, 'Position', [1000, 200, 800, 600]);
+%     annotation(figure1,'textbox',...
+%         [0.174214285714286 0.797619047619048 0.190071428571429 ...
+%         0.0666666666666721],'String',{['f = ' freqString ' Hz']},...
+%         'FitBoxToText','off',...
+%         'EdgeColor',[0.941176474094391 0.941176474094391 ...
+%         0.941176474094391]);
     
     %%%%% AMPLITUDE PLOT %%%%%
     figure2 = figure;
@@ -221,34 +232,35 @@ for fileNum=1:1%length(filesList)
     ylabel('Amplitude [Arb]','FontSize',12);
     xlabel('Time [ms]','FontSize',12);
     axis([0 phsPtMax 0 1.15*max(expAmp)]);
+    set(figure2, 'Position', [100, 200, 800, 600]);
     
     %%%%% FINAL PLOT %%%%%
-%     %Get line segments for axis to relate to Tom's figures
-%     line13x = [r1(1) r3(1)];
-%     line13y = [r1(2) r3(2)];
-%     line24x = [r2(1) r4(1)];
-%     line24y = [r2(2) r4(2)];
-%     
-%     figure3 = figure;
-%     plot(line13x,line13y);
-%     hold on
-%     plot(line24x,line24y);
-%     hold on
-%     % quiver(a/2,a/2,knew(1),knew(2));
-%     % hold on; 
-%     % quiver(a/2,a/2,knew2(1),knew2(2));
-%     % hold on;
-%     quiver(a/2,a/2,knew3(1),knew3(2));
-%     hold on;
-%     scatter(r_all(:,1), r_all(:,2));
-%     title('Guessed Direction','FontSize',14);
-%     xlabel('x [m]','FontSize',14);
-%     ylabel('y [m]','FontSize',14);
-%     axis([-1 2 -1 2]);
-%     legend('on');
-%     legend('Phase', 'Amplitude');
-%     createAntennaTextBox(figure3);
-%     set(figure3, 'Position', [200, 200, 800, 800]);
+    %Get line segments for axis to relate to Tom's figures
+    line13x = [r1(1) r3(1)];
+    line13y = [r1(2) r3(2)];
+    line24x = [r2(1) r4(1)];
+    line24y = [r2(2) r4(2)];
+    
+    figure3 = figure;
+    plot(line13x,line13y);
+    hold on
+    plot(line24x,line24y);
+    hold on
+    % quiver(a/2,a/2,knew(1),knew(2));
+    % hold on; 
+    % quiver(a/2,a/2,knew2(1),knew2(2));
+    % hold on;
+    quiver(a/2,a/2,knew3(1),knew3(2));
+    hold on;
+    scatter(r_all(:,1), r_all(:,2));
+    title('Guessed Direction','FontSize',14);
+    xlabel('x [m]','FontSize',14);
+    ylabel('y [m]','FontSize',14);
+    axis([-1 2 -1 2]);
+    legend('on');
+    legend('Phase', 'Amplitude');
+    createAntennaTextBox(figure3);
+    set(figure3, 'Position', [200, 200, 800, 800]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
