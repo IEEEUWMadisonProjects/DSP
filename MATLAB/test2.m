@@ -3,9 +3,9 @@
 
 
 
-% close all
-% clear;
-% clc;
+close all
+clear;
+clc;
 
 % input=0 -> sample input signal, input!=0 -> .wav
 input = 1;

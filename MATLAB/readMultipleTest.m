@@ -3,13 +3,13 @@
 % Author: Alex Gabourie
 % Reading multiple files and test their direction
 %% Initialize workspace
-% close all
-% clear;
-% clc;
+close all
+clear;
+clc;
 
 %% User input parameters
 %The folder in which all of the wav files are found
-folderNum = 1;
+folderNum = 0;
 
 if folderNum==0
     folderName = '.\May_1_4Ant';
@@ -18,6 +18,8 @@ elseif folderNum==1
     folderName = '.\apr22';
     throwAwayPoints = 0;
 end
+
+folderOut = folderName;
 
 %number of antennas used in signal
 numAnt = 4;
@@ -59,8 +61,10 @@ filesList = dir([folderName '\*.wav']);
 
 %% File Loop
     
-for fileNum=1:1%length(filesList)
-    file = [folderName '\' filesList(fileNum).name]
+for fileNum=1:length(filesList)
+    close all;
+    fileName = filesList(fileNum).name;
+    file = [folderName '\' fileName];
     Ein = audioread(file); 
     Ein = Ein(throwAwayPoints+1:end,:);
 
@@ -73,12 +77,11 @@ for fileNum=1:1%length(filesList)
     NFFT = 2^nextpow2(length(Ein)+1);
     EinFFT = fft(Ein,NFFT);
     [val, idx] = max(abs(EinFFT(1:floor(NFFT/2))));
-    freq = idx*2*pi/(NFFT*2*pi)*48000
+    freq = idx*2*pi/(NFFT*2*pi)*48000;
     freqString = num2str(floor(freq));
     %figure
     %plot(abs(EinFFT))
-    f = 48000/2*linspace(0,1,NFFT/2+1);
-    omega = 2*pi*2612;
+    omega = 2*pi*(freq);
     
     %want 20ms of info collected
     T = 2*pi/omega;
@@ -253,14 +256,21 @@ for fileNum=1:1%length(filesList)
     quiver(a/2,a/2,knew3(1),knew3(2));
     hold on;
     scatter(r_all(:,1), r_all(:,2));
-    title('Guessed Direction','FontSize',14);
+    title([fileName ': Guessed Direction '],'FontSize',14);
     xlabel('x [m]','FontSize',14);
     ylabel('y [m]','FontSize',14);
     axis([-1 2 -1 2]);
-    legend('on');
-    legend('Phase', 'Amplitude');
+%     legend('on');
+%     legend('Phase', 'Amplitude');
     createAntennaTextBox(figure3);
     set(figure3, 'Position', [200, 200, 800, 800]);
+    fileTemp = strsplit(fileName, '.wav');
+    if ~(exist([folderOut '_out'],'dir')==7)
+        mkdir([folderOut '_out']);
+    end
+    fileTemp = regexprep(strjoin([folderOut '_out\' fileTemp(1) '_dir.png']),'\s','');
+    saveas(figure3,fileTemp);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
