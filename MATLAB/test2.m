@@ -74,16 +74,17 @@ else
 
 % Ein = audioread('apr22/Single_150deg.wav');omega = 2*pi*2700; %[rads/s]
 % angle = 150;
-% 
+
 % Ein = audioread('apr22/Single_180deg.wav');omega = 2*pi*2715; %[rads/s]
 % angle = 180;
 
 % Ein = audioread('apr22/Single_210deg.wav');omega = 2*pi*2715; %[rads/s]
 % angle = 210;
 
+% Ein = audioread('May_1_4Ant/gqrx_A15.wav');omega = 2*pi*2503; %[rads/s]
+% angle = 0;
+% Ein = Ein(50:end);
 
-
-    omega = 2*pi*2612; %[rads/s]
     %want 20ms of info collected
     T = 2*pi/omega;
     numTpoints = 48e3*.02; % samples/sec*seconds
@@ -173,7 +174,7 @@ for m=1:length(Ein)
         Eref(m) = real(exp(1i*(omega*t(m)-pi/2)));
 end
 
-% %Plot the signals coming in from the antenna vs the reference signal
+%Plot the signals coming in from the antenna vs the reference signal
 % figure;
 % plot(Ein,'b');
 % hold on;
@@ -216,13 +217,13 @@ phaseDiff = expPhase-realPhase;
 % % axis([0 phsPtMax 2 4]);
 % % axis([0 t(length(phaseDiff))*1000 0 1.5*pi]);
 % padding = .15*max(abs(min(phaseDiff)),abs(max(phaseDiff)));
-% 
+
 % axis([0 phsPtMax min(phaseDiff)-padding max(phaseDiff)+padding ]);
-% % annotation(figure1,'textbox',...
-% %     [0.174214285714286 0.797619047619048 0.190071428571429 0.0666666666666721],...
-% %     'String',{'freq. = 2753 Hz'},...
-% %     'FitBoxToText','off',...
-% %     'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
+% annotation(figure1,'textbox',...
+%     [0.174214285714286 0.797619047619048 0.190071428571429 0.0666666666666721],...
+%     'String',{'freq. = 2753 Hz'},...
+%     'FitBoxToText','off',...
+%     'EdgeColor',[0.941176474094391 0.941176474094391 0.941176474094391]);
 
 % figure2 = figure;
 % plot(expAmp);
@@ -260,6 +261,11 @@ amp = [mean(expAmp(startIndex(4):(startIndex(4)+phsAveSize))),...
     mean(expAmp(startIndex(3):(startIndex(3)+phsAveSize))),...
     mean(expAmp(startIndex(2):(startIndex(2)+phsAveSize))),...
     mean(expAmp(startIndex(1):(startIndex(1)+phsAveSize)))];
+
+% %90 degrees eyeball
+% amp = [.32 .25 .32 1];
+%0 degrees eyeball
+% amp = [1 .42 .22 .38];
 
 ampOrd = sortrows([amp;linspace(1,length(amp),length(amp))]',1)';
 
@@ -333,26 +339,24 @@ line24y = [r2(2) r4(2)];
 % knew = r_n\(r_all'*kr');
 % knew = knew/norm(knew);
 
-figure3 = figure;
-% quiver(0,0,knew(1),knew(2));
-% hold on; 
-% quiver(0,0,knew2(1),knew2(2));
+% figure3 = figure;
+% % quiver(0,0,knew(1),knew(2));
+% % hold on; 
+% % quiver(0,0,knew2(1),knew2(2));
+% % hold on;
+% plot(line13x,line13y);
+% hold on
+% plot(line24x,line24y);
+% hold on
+% scatter(r_all(:,1), r_all(:,2));
+% title('Guessed Direction','FontSize',14);
+% xlabel('x [m]','FontSize',14);
+% ylabel('y [m]','FontSize',14);
+% quiver(a/2,a/2,knew3(1),knew3(2));
 % hold on;
-plot(line13x,line13y);
-hold on
-plot(line24x,line24y);
-hold on
-scatter(r_all(:,1), r_all(:,2));
-title('Guessed Direction','FontSize',14);
-xlabel('x [m]','FontSize',14);
-ylabel('y [m]','FontSize',14);
-quiver(a/2,a/2,knew3(1),knew3(2));
-hold on;
-axis([-1 2 -1 2]);
-legend('on');
-legend('Phase', 'Amplitude');
-createAntennaTextBox(figure3);
-set(figure3, 'Position', [200, 200, 800, 800]);
+% axis([-1 2 -1 2]);
+% createAntennaTextBox(figure3);
+% set(figure3, 'Position', [200, 200, 800, 800]);
 
 
 %% Notes
