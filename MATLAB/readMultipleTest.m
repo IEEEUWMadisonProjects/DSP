@@ -61,14 +61,14 @@ filesList = dir([folderName '\*.wav']);
 
 %% File Loop
     
-for fileNum=1:length(filesList)
+for fileNum=1:1%length(filesList)
     close all;
     fileName = filesList(fileNum).name;
     file = [folderName '\' fileName];
     Ein = audioread(file); 
     Ein = Ein(throwAwayPoints+1:end,:);
 
-    
+    format long
     % The DTFT (FFT) yields a continuous spectrum of frequencies that we
     % must sample to get a finite, representable number of frequencies in
     % the computer. However, you can choose the number of points you want
@@ -76,12 +76,21 @@ for fileNum=1:length(filesList)
     % frequency domain.
     NFFT = 2^nextpow2(length(Ein)+1);
     EinFFT = fft(Ein,NFFT);
+    EinFFT1 = fft(Ein(floor(length(Ein))/4:2*floor(length(Ein))/4,:),NFFT);
     [val, idx] = max(abs(EinFFT(1:floor(NFFT/2))));
-    freq = idx*2*pi/(NFFT*2*pi)*48000;
+    [val1, idx1] = max(abs(EinFFT1(1:floor(NFFT/2))));
+    freq = idx*2*pi/(NFFT*2*pi)*48000
+    freq1 = idx1*2*pi/(NFFT*2*pi)*48000
     freqString = num2str(floor(freq));
-    %figure
-    %plot(abs(EinFFT))
-    omega = 2*pi*(freq);
+    figure
+    plot(Ein(1:floor(length(Ein))/4,:))
+    figure
+    plot(Ein)
+    figure
+    plot(abs(EinFFT))
+    figure
+    plot(abs(EinFFT1))
+    omega = 2*pi*(freq1);
     
     %want 20ms of info collected
     T = 2*pi/omega;
