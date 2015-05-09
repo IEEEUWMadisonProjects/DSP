@@ -61,7 +61,7 @@ filesList = dir([folderName '\*.wav']);
 
 %% File Loop
     
-for fileNum=2:2%length(filesList)
+for fileNum=5:5%length(filesList)
     close all;
     fileName = filesList(fileNum).name;
     file = [folderName '\' fileName];
@@ -78,8 +78,8 @@ for fileNum=2:2%length(filesList)
     [val, idx] = max(abs(EinFFT(1:floor(NFFT/2))));
     freq = idx*2*pi/(NFFT*2*pi)*48000;
     freqString = num2str(floor(freq))
-    figure
-    plot(abs(EinFFT(1:floor(length(EinFFT)/2))));
+%     figure
+%     plot(abs(EinFFT(1:floor(length(EinFFT)/2))));
     omega = 2*pi*(freq);
     
     %want 20ms of info collected
@@ -142,13 +142,15 @@ for fileNum=2:2%length(filesList)
         mean(expAmp(startIndex(2):(startIndex(2)+phsAveSize))),...
         mean(expAmp(startIndex(1):(startIndex(1)+phsAveSize)))];
 
-    ampOrd = sortrows([amp;linspace(1,length(amp),length(amp));bkr]',1)';
+    %possible refactor needed
+    ampPhaseOrd = sortrows([amp;linspace(1,length(amp),length(amp));bkr]',1)';
 
     
     %%%%% 4 Ant Phase Method %%%%
     % %The bkr values we have now are actually beta*k*r, so we need to divide by
     % %beta
     % kr = -bkr/beta;
+    % r_n = r_all'*r_all;
     % knew = r_n\(r_all'*kr');
     % knew = knew/norm(knew);
     
@@ -165,7 +167,7 @@ for fileNum=2:2%length(filesList)
     % knew2 = -knew2/norm(knew2);
     
     
-    % Take the first two indicies from ampOrd to determine a direction
+    % Take the first two indicies from ampPhaseOrd to determine a direction
     % I know if directly on:
     % 1: 45
     % 2: 135
@@ -174,21 +176,21 @@ for fileNum=2:2%length(filesList)
     % Rotations are based on angle from vector drawn from antenna 1 to 2
     % Recognizing which antenna has the largest amplitude narrows it to a 45
     % degree angle
-    center = 45+90*(ampOrd(2,4)-1);
+    center = 45+90*(ampPhaseOrd(2,4)-1);
     % with the center angle, you either add up to 45 degrees or subtract up to
     % 45 degrees
     antNum = [1,2,3,4,1]; %Didn't feel like making circular buffer
     sign = 1;
 
-    if (ampOrd(2,4)==1 && ampOrd(2,3)==4) || ...
-       (ampOrd(2,4)==2 && ampOrd(2,3)==1) || ...
-       (ampOrd(2,4)==3 && ampOrd(2,3)==2) || ...
-       (ampOrd(2,4)==4 && ampOrd(2,3)==3)
+    if (ampPhaseOrd(2,4)==1 && ampPhaseOrd(2,3)==4) || ...
+       (ampPhaseOrd(2,4)==2 && ampPhaseOrd(2,3)==1) || ...
+       (ampPhaseOrd(2,4)==3 && ampPhaseOrd(2,3)==2) || ...
+       (ampPhaseOrd(2,4)==4 && ampPhaseOrd(2,3)==3)
 
         sign=-1;
     end
-    topSig = ampOrd(1,4)-ampOrd(1,2);
-    secondSig = ampOrd(1,3)-ampOrd(1,2);
+    topSig = ampPhaseOrd(1,4)-ampPhaseOrd(1,2);
+    secondSig = ampPhaseOrd(1,3)-ampPhaseOrd(1,2);
     inAngle = (center+90*sign*(secondSig/(topSig+secondSig)));
     inAngle = inAngle*pi/180;
     knew3 = [1,0];
@@ -197,12 +199,29 @@ for fileNum=2:2%length(filesList)
     
     
     %%%%% 3 Ant Method %%%%%
-    % Use the three strongest antennas
+    % Use the three strongest antennas, in strongest to weakest order
+    rcurr = [r_all(ampPhaseOrd(2,4),:);
+             r_all(ampPhaseOrd(2,3),:);
+             r_all(ampPhaseOrd(2,2),:)];
+
+    %using strongest to weakest signal strength, order the phases
+    bkrTop3 = [ampPhaseOrd(3,4),ampPhaseOrd(3,3),ampPhaseOrd(3,2)];
+    krTop3 = bkrTop3/beta;
+    r_nTop3 = rcurr'*rcurr;
+    knew4 = r_nTop3\(rcurr'*krTop3');
+    knew4 = knew4/norm(knew4);
     
-    
-    % kr = -bkr/beta;
-    % knew = r_n\(r_all'*kr');
-    % knew = knew/norm(knew);
+    %%%%% 2 Ant Method %%%%%
+    % Use the three strongest antennas, in strongest to weakest order
+    rcurr = [r_all(ampPhaseOrd(2,4),:);
+             r_all(ampPhaseOrd(2,3),:)];
+
+    %using strongest to weakest signal strength, order the phases
+    bkrTop2 = [ampPhaseOrd(3,4),ampPhaseOrd(3,3)];
+    krTop2 = -bkrTop2/beta;
+    r_nTop2 = rcurr'*rcurr;
+    knew5 = r_nTop2\(rcurr'*krTop2');
+    knew5 = knew5/norm(knew5);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     
     %%%%% REF VS EIN %%%%%
@@ -245,32 +264,44 @@ for fileNum=2:2%length(filesList)
     line24x = [r2(1) r4(1)];
     line24y = [r2(2) r4(2)];
     
-%     figure3 = figure;
-%     plot(line13x,line13y);
-%     hold on
-%     plot(line24x,line24y);
-%     hold on
-%     % quiver(a/2,a/2,knew(1),knew(2));
-%     % hold on; 
-%     % quiver(a/2,a/2,knew2(1),knew2(2));
-%     % hold on;
-%     quiver(a/2,a/2,knew3(1),knew3(2));
+    figure3 = figure;
+%     % 4 Antenna Phase Method
+%     quiver(a/2,a/2,knew(1),knew(2));
+%     hold on; 
+%     % Attenuation Method
+%     quiver(a/2,a/2,knew2(1),knew2(2));
 %     hold on;
-%     scatter(r_all(:,1), r_all(:,2));
-%     title([fileName ': Guessed Direction '],'FontSize',14);
-%     xlabel('x [m]','FontSize',14);
-%     ylabel('y [m]','FontSize',14);
-%     axis([-1 2 -1 2]);
-% %     legend('on');
-% %     legend('Phase', 'Amplitude');
-%     createAntennaTextBox(figure3);
-%     set(figure3, 'Position', [200, 200, 800, 800]);
-%     fileTemp = strsplit(fileName, '.wav');
-%     if ~(exist([folderOut '_out'],'dir')==7)
-%         mkdir([folderOut '_out']);
-%     end
-%     fileTemp = regexprep(strjoin([folderOut '_out\' fileTemp(1) '_dir.png']),'\s','');
-%     saveas(figure3,fileTemp);
+    % Amplitude Method - 3 Antennas
+    quiver(a/2,a/2,knew3(1),knew3(2));
+    hold on;
+    % 3 Antenna Phase Method (top 3 amplitudes)
+    quiver(a/2,a/2,knew4(1),knew4(2));
+    hold on;
+    % 2 Antenna Phase Method (top 2 amplitudes)
+    quiver(a/2,a/2,knew5(1),knew5(2));
+    hold on;
+    
+    scatter(r_all(:,1), r_all(:,2));
+    title([fileName ': Guessed Direction '],'FontSize',14);
+    xlabel('x [m]','FontSize',14);
+    ylabel('y [m]','FontSize',14);
+    axis([-1 2 -1 2]);
+    legend('on');
+    legend('Amplitude', 'Phase(3)', 'Phase(2)');
+    %Draw coordinate lines
+    plot(line13x,line13y);
+    hold on
+    plot(line24x,line24y);
+    hold on
+    
+    createAntennaTextBox(figure3);
+    set(figure3, 'Position', [200, 200, 800, 800]);
+    fileTemp = strsplit(fileName, '.wav');
+    if ~(exist([folderOut '_out'],'dir')==7)
+        mkdir([folderOut '_out']);
+    end
+    fileTemp = regexprep(strjoin([folderOut '_out\' fileTemp(1) '_dir.png']),'\s','');
+    saveas(figure3,fileTemp);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
