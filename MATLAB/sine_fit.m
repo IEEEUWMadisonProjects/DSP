@@ -126,8 +126,8 @@ for i=1:4;
     end    
 end
     
-if plot_flag==1 
-    x_vector=min(x):mean(diff(x))/2:max(x);
-    plot(x,y,'k.',x_vector,f(BETA,x_vector),'r-')
-    xlim(minmax(x_vector))
-end
+% if plot_flag==1 
+%     x_vector=min(x):mean(diff(x))/2:max(x);
+%     plot(x,y,'k.',x_vector,f(BETA,x_vector),'r-')
+%     xlim(minmax(x_vector))
+% end

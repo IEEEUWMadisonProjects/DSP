@@ -61,36 +61,26 @@ filesList = dir([folderName '\*.wav']);
 
 %% File Loop
     
-for fileNum=1:1%length(filesList)
+for fileNum=2:2%length(filesList)
     close all;
     fileName = filesList(fileNum).name;
     file = [folderName '\' fileName];
     Ein = audioread(file); 
-    Ein = Ein(throwAwayPoints+1:end,:);
-
-    format long
+    Ein = Ein(throwAwayPoints+1:end,1)';
+    
     % The DTFT (FFT) yields a continuous spectrum of frequencies that we
     % must sample to get a finite, representable number of frequencies in
     % the computer. However, you can choose the number of points you want
     % in your FFT to get whatever resolution you would like in the
     % frequency domain.
-    NFFT = 2^nextpow2(length(Ein)+1);
-    EinFFT = fft(Ein,NFFT);
-    EinFFT1 = fft(Ein(floor(length(Ein))/4:2*floor(length(Ein))/4,:),NFFT);
+    NFFT = 2^(nextpow2(length(Ein))+2);
+    EinFFT = fft(Ein(1:floor(length(Ein)/4)),NFFT);
     [val, idx] = max(abs(EinFFT(1:floor(NFFT/2))));
-    [val1, idx1] = max(abs(EinFFT1(1:floor(NFFT/2))));
-    freq = idx*2*pi/(NFFT*2*pi)*48000
-    freq1 = idx1*2*pi/(NFFT*2*pi)*48000
-    freqString = num2str(floor(freq));
+    freq = idx*2*pi/(NFFT*2*pi)*48000;
+    freqString = num2str(floor(freq))
     figure
-    plot(Ein(1:floor(length(Ein))/4,:))
-    figure
-    plot(Ein)
-    figure
-    plot(abs(EinFFT))
-    figure
-    plot(abs(EinFFT1))
-    omega = 2*pi*(freq1);
+    plot(abs(EinFFT(1:floor(length(EinFFT)/2))));
+    omega = 2*pi*(freq);
     
     %want 20ms of info collected
     T = 2*pi/omega;
@@ -116,10 +106,10 @@ for fileNum=1:1%length(filesList)
     expAmp = zeros(1,phsPtMax);%to get amplitude plot much like the phase 
     
     for i=1:phsPtMax
-    realPhase(i) = sineFit(real(Eref(i:(i+phsPts-1))),t(1:(phsPts))...
-        ,omega);
-    [expPhase(i),expAmp(i)] = sineFit(real(Ein(i:(i+phsPts-1))),...
-        t(1:(phsPts)),omega);
+        realPhase(i) = sineFit(real(Eref(i:(i+phsPts-1))),t(1:(phsPts))...
+            ,omega);
+        [expPhase(i),expAmp(i)] = sineFit(real(Ein(i:(i+phsPts-1))),...
+            t(1:(phsPts)),omega);
     end
 
     %unwrap phases to get the phase difference plot
@@ -152,7 +142,8 @@ for fileNum=1:1%length(filesList)
         mean(expAmp(startIndex(2):(startIndex(2)+phsAveSize))),...
         mean(expAmp(startIndex(1):(startIndex(1)+phsAveSize)))];
 
-    ampOrd = sortrows([amp;linspace(1,length(amp),length(amp))]',1)';
+    ampOrd = sortrows([amp;linspace(1,length(amp),length(amp));bkr]',1)';
+
     
     %%%%% 4 Ant Phase Method %%%%
     % %The bkr values we have now are actually beta*k*r, so we need to divide by
@@ -187,12 +178,8 @@ for fileNum=1:1%length(filesList)
     % with the center angle, you either add up to 45 degrees or subtract up to
     % 45 degrees
     antNum = [1,2,3,4,1]; %Didn't feel like making circular buffer
-
     sign = 1;
 
-    % if antNum(ampOrd(2,4)+1)==ampOrd(2,3)
-    %     sign = -1;
-    % end
     if (ampOrd(2,4)==1 && ampOrd(2,3)==4) || ...
        (ampOrd(2,4)==2 && ampOrd(2,3)==1) || ...
        (ampOrd(2,4)==3 && ampOrd(2,3)==2) || ...
@@ -200,17 +187,22 @@ for fileNum=1:1%length(filesList)
 
         sign=-1;
     end
-
     topSig = ampOrd(1,4)-ampOrd(1,2);
     secondSig = ampOrd(1,3)-ampOrd(1,2);
-
     inAngle = (center+90*sign*(secondSig/(topSig+secondSig)));
     inAngle = inAngle*pi/180;
-
     knew3 = [1,0];
     rot = [cos(inAngle),-sin(inAngle);sin(inAngle),cos(inAngle)];
     knew3 = -(rot*knew3')';
-
+    
+    
+    %%%%% 3 Ant Method %%%%%
+    % Use the three strongest antennas
+    
+    
+    % kr = -bkr/beta;
+    % knew = r_n\(r_all'*kr');
+    % knew = knew/norm(knew);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     
     %%%%% REF VS EIN %%%%%
@@ -238,13 +230,13 @@ for fileNum=1:1%length(filesList)
 %         0.941176474094391]);
     
     %%%%% AMPLITUDE PLOT %%%%%
-    figure2 = figure;
-    plot(expAmp);
-    title('Amplitude vs. Time','FontSize',14);    
-    ylabel('Amplitude [Arb]','FontSize',12);
-    xlabel('Time [ms]','FontSize',12);
-    axis([0 phsPtMax 0 1.15*max(expAmp)]);
-    set(figure2, 'Position', [100, 200, 800, 600]);
+%     figure2 = figure;
+%     plot(expAmp);
+%     title('Amplitude vs. Time','FontSize',14);    
+%     ylabel('Amplitude [Arb]','FontSize',12);
+%     xlabel('Time [ms]','FontSize',12);
+%     axis([0 phsPtMax 0 1.15*max(expAmp)]);
+%     set(figure2, 'Position', [100, 200, 800, 600]);
     
     %%%%% FINAL PLOT %%%%%
     %Get line segments for axis to relate to Tom's figures
@@ -253,32 +245,32 @@ for fileNum=1:1%length(filesList)
     line24x = [r2(1) r4(1)];
     line24y = [r2(2) r4(2)];
     
-    figure3 = figure;
-    plot(line13x,line13y);
-    hold on
-    plot(line24x,line24y);
-    hold on
-    % quiver(a/2,a/2,knew(1),knew(2));
-    % hold on; 
-    % quiver(a/2,a/2,knew2(1),knew2(2));
-    % hold on;
-    quiver(a/2,a/2,knew3(1),knew3(2));
-    hold on;
-    scatter(r_all(:,1), r_all(:,2));
-    title([fileName ': Guessed Direction '],'FontSize',14);
-    xlabel('x [m]','FontSize',14);
-    ylabel('y [m]','FontSize',14);
-    axis([-1 2 -1 2]);
-%     legend('on');
-%     legend('Phase', 'Amplitude');
-    createAntennaTextBox(figure3);
-    set(figure3, 'Position', [200, 200, 800, 800]);
-    fileTemp = strsplit(fileName, '.wav');
-    if ~(exist([folderOut '_out'],'dir')==7)
-        mkdir([folderOut '_out']);
-    end
-    fileTemp = regexprep(strjoin([folderOut '_out\' fileTemp(1) '_dir.png']),'\s','');
-    saveas(figure3,fileTemp);
+%     figure3 = figure;
+%     plot(line13x,line13y);
+%     hold on
+%     plot(line24x,line24y);
+%     hold on
+%     % quiver(a/2,a/2,knew(1),knew(2));
+%     % hold on; 
+%     % quiver(a/2,a/2,knew2(1),knew2(2));
+%     % hold on;
+%     quiver(a/2,a/2,knew3(1),knew3(2));
+%     hold on;
+%     scatter(r_all(:,1), r_all(:,2));
+%     title([fileName ': Guessed Direction '],'FontSize',14);
+%     xlabel('x [m]','FontSize',14);
+%     ylabel('y [m]','FontSize',14);
+%     axis([-1 2 -1 2]);
+% %     legend('on');
+% %     legend('Phase', 'Amplitude');
+%     createAntennaTextBox(figure3);
+%     set(figure3, 'Position', [200, 200, 800, 800]);
+%     fileTemp = strsplit(fileName, '.wav');
+%     if ~(exist([folderOut '_out'],'dir')==7)
+%         mkdir([folderOut '_out']);
+%     end
+%     fileTemp = regexprep(strjoin([folderOut '_out\' fileTemp(1) '_dir.png']),'\s','');
+%     saveas(figure3,fileTemp);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
