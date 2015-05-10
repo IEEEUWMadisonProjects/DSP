@@ -16,7 +16,7 @@ clear;
 close all;
 clc;
 
-runVideo = 0;
+runVideo = 1;
 
 %% Input Parameters
 %Frequency
@@ -62,12 +62,12 @@ lambda = (2*pi)/beta;
 a = .9*lambda/(2*sqrt(2)); %[m]
 %This constant is calculated to place the antennas an appropriate distance
 %away such that we can determine which antenna was hit first
-
 %From this the positions of the antennas can be determined
-r1 = [0, 0];
-r2 = [a, 0];
-r3 = [a, a];
-r4 = [0, a];
+shift = 5;
+r1 = [0, 0]+shift;
+r2 = [a, 0]+shift;
+r3 = [a, a]+shift;
+r4 = [0, a]+shift;
 
 %For plotting
 r_all = [r1;r2;r3;r4];

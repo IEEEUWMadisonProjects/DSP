@@ -49,19 +49,20 @@ filesList = dir([folderName '\*.wav']);
     mu = mu_o*mu_rel;
     
     % The separation constant (like lattice constant) is 
-    a = 1; %[m] - about what our antenna spacing is
+    a = .4699*2; %[m] - about what our antenna spacing is
     %From this the positions of the antennas can be determined
-    r1 = [0, 0];
-    r2 = [a, 0];
-    r3 = [a, a];
-    r4 = [0, a];
+    shift = 0;
+    r1 = [0, 0]+shift;
+    r2 = [a, 0]+shift;
+    r3 = [a, a]+shift;
+    r4 = [0, a]+shift;
 
     %For plotting
     r_all = [r1;r2;r3;r4];
 
 %% File Loop
     
-for fileNum=5:5%length(filesList)
+for fileNum=10:10%length(filesList)
     close all;
     fileName = filesList(fileNum).name;
     file = [folderName '\' fileName];
@@ -135,6 +136,7 @@ for fileNum=5:5%length(filesList)
         mean(phaseDiff(startIndex(3):(startIndex(3)+phsAveSize))),...
         mean(phaseDiff(startIndex(2):(startIndex(2)+phsAveSize))),...
         mean(phaseDiff(startIndex(1):(startIndex(1)+phsAveSize)))];
+    bkr = bkr-bkr(1);
 
 
     amp = [mean(expAmp(startIndex(4):(startIndex(4)+phsAveSize))),...
@@ -144,7 +146,6 @@ for fileNum=5:5%length(filesList)
 
     %possible refactor needed
     ampPhaseOrd = sortrows([amp;linspace(1,length(amp),length(amp));bkr]',1)';
-
     
     %%%%% 4 Ant Phase Method %%%%
     % %The bkr values we have now are actually beta*k*r, so we need to divide by
@@ -212,15 +213,15 @@ for fileNum=5:5%length(filesList)
     knew4 = knew4/norm(knew4);
     
     %%%%% 2 Ant Method %%%%%
-    % Use the three strongest antennas, in strongest to weakest order
+    % Use the two strongest antennas, in strongest to weakest order
     rcurr = [r_all(ampPhaseOrd(2,4),:);
              r_all(ampPhaseOrd(2,3),:)];
 
     %using strongest to weakest signal strength, order the phases
     bkrTop2 = [ampPhaseOrd(3,4),ampPhaseOrd(3,3)];
+    
     krTop2 = -bkrTop2/beta;
-    r_nTop2 = rcurr'*rcurr;
-    knew5 = r_nTop2\(rcurr'*krTop2');
+    knew5 = rcurr\krTop2';
     knew5 = knew5/norm(knew5);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     
@@ -265,6 +266,7 @@ for fileNum=5:5%length(filesList)
     line24y = [r2(2) r4(2)];
     
     figure3 = figure;
+    center = r3-(r3-r1)/2;
 %     % 4 Antenna Phase Method
 %     quiver(a/2,a/2,knew(1),knew(2));
 %     hold on; 
@@ -272,22 +274,24 @@ for fileNum=5:5%length(filesList)
 %     quiver(a/2,a/2,knew2(1),knew2(2));
 %     hold on;
     % Amplitude Method - 3 Antennas
-    quiver(a/2,a/2,knew3(1),knew3(2));
+    quiver(center(1),center(2),knew3(1),knew3(2));
     hold on;
-    % 3 Antenna Phase Method (top 3 amplitudes)
+%     % 3 Antenna Phase Method (top 3 amplitudes)
     quiver(a/2,a/2,knew4(1),knew4(2));
     hold on;
     % 2 Antenna Phase Method (top 2 amplitudes)
-    quiver(a/2,a/2,knew5(1),knew5(2));
+    quiver(center(1),center(2),knew5(1),knew5(2));
     hold on;
     
     scatter(r_all(:,1), r_all(:,2));
     title([fileName ': Guessed Direction '],'FontSize',14);
     xlabel('x [m]','FontSize',14);
     ylabel('y [m]','FontSize',14);
-    axis([-1 2 -1 2]);
+%     axis([-1 2 -1 2]);
+    axis([center(1)-1.5 center(1)+1.5 center(2)-1.5 center(2)+1.5]);
     legend('on');
     legend('Amplitude', 'Phase(3)', 'Phase(2)');
+%     legend('Amplitude',  'Phase(2)');
     %Draw coordinate lines
     plot(line13x,line13y);
     hold on

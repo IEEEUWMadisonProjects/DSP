@@ -69,12 +69,12 @@ lambda = (2*pi)/beta;
 a = 1; %[m] - about what our antenna spacing is
 %This constant is calculated to place the antennas an appropriate distance
 %away such that we can determine which antenna was hit first
-
+offset = 1;
 %From this the positions of the antennas can be determined
-r1 = [0, 0];
-r2 = [a, 0];
-r3 = [a, a];
-r4 = [0, a];
+r1 = [0, 0]+offset;
+r2 = [a, 0]+offset;
+r3 = [a, a]+offset;
+r4 = [0, a]+offset;
 
 %For plotting
 r_all = [r1;r2;r3;r4];

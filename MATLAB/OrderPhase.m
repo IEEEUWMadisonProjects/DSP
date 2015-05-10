@@ -28,12 +28,9 @@ end
 
 %sort the data to its origninal order and return the new phases
 ord = (sortrows(ord',2)');
-ord(1,:) = ord(1,:) - (ord(1,1));
+% ord(1,:) = ord(1,:) - (ord(1,1));
 phaseRet = ord(1,:);
 
 
 end
 
-% function [ phaseRet ] = OrderPhase(phases, amplitudes)
-%     
-% end
