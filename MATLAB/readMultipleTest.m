@@ -49,26 +49,37 @@ filesList = dir([folderName '\*.wav']);
     mu = mu_o*mu_rel;
     
     % The separation constant (like lattice constant) is 
-    a = .4699*2; %[m] - about what our antenna spacing is
+    a = .4699*sqrt(2); %[m] - about what our antenna spacing is
     %From this the positions of the antennas can be determined
-    shift = 0;
-    r1 = [0, 0]+shift;
-    r2 = [a, 0]+shift;
-    r3 = [a, a]+shift;
-    r4 = [0, a]+shift;
+%     shift = 0;
+%     r1 = [0, 0]+shift;
+%     r2 = [a, 0]+shift;
+%     r3 = [a, a]+shift;
+%     r4 = [0, a]+shift;
+    r1 = [-a/2, -a/2];
+    r2 = [a/2, -a/2];
+    r3 = [a/2, a/2];
+    r4 = [-a/2, a/2];
 
     %For plotting
     r_all = [r1;r2;r3;r4];
 
 %% File Loop
     
-for fileNum=10:10%length(filesList)
+for fileNum=3:3%length(filesList)
     close all;
     fileName = filesList(fileNum).name;
+    realAngStartIdx = regexp(fileName,'\d+');
+    realAngEndIdx = regexp(fileName(realAngStartIdx+1:end),'\D');
+    realAng = str2double(fileName(realAngStartIdx:(realAngEndIdx(1)+realAngStartIdx-1)));
     file = [folderName '\' fileName];
     Ein = audioread(file); 
     Ein = Ein(throwAwayPoints+1:end,1)';
     
+    theta = -pi*(realAng)/180;
+    k = [-0.707106781186548  -0.707106781186547];
+    rot = [cos(theta),-sin(theta);sin(theta),cos(theta)];
+    k = (rot*k')';
     % The DTFT (FFT) yields a continuous spectrum of frequencies that we
     % must sample to get a finite, representable number of frequencies in
     % the computer. However, you can choose the number of points you want
@@ -78,10 +89,13 @@ for fileNum=10:10%length(filesList)
     EinFFT = fft(Ein(1:floor(length(Ein)/4)),NFFT);
     [val, idx] = max(abs(EinFFT(1:floor(NFFT/2))));
     freq = idx*2*pi/(NFFT*2*pi)*48000;
-    freqString = num2str(floor(freq))
+    freqString = num2str(floor(freq));
 %     figure
 %     plot(abs(EinFFT(1:floor(length(EinFFT)/2))));
     omega = 2*pi*(freq);
+    
+    lambda = 3e8/151e6;
+    maxPhase = 2*pi/(lambda)*2*a;
     
     %want 20ms of info collected
     T = 2*pi/omega;
@@ -136,9 +150,13 @@ for fileNum=10:10%length(filesList)
         mean(phaseDiff(startIndex(3):(startIndex(3)+phsAveSize))),...
         mean(phaseDiff(startIndex(2):(startIndex(2)+phsAveSize))),...
         mean(phaseDiff(startIndex(1):(startIndex(1)+phsAveSize)))];
-    bkr = bkr-bkr(1);
-
-
+    bkr/pi
+    OrderPhase2(bkr)/pi
+    if ~(sum(bkr)<10^(-4) && sum(bkr)>-10^(-4))
+        bkr = bkr - sum(bkr)/4;
+    end
+    bkr/pi
+    
     amp = [mean(expAmp(startIndex(4):(startIndex(4)+phsAveSize))),...
         mean(expAmp(startIndex(3):(startIndex(3)+phsAveSize))),...
         mean(expAmp(startIndex(2):(startIndex(2)+phsAveSize))),...
@@ -267,6 +285,9 @@ for fileNum=10:10%length(filesList)
     
     figure3 = figure;
     center = r3-(r3-r1)/2;
+    % Real Direction
+    quiver(center(1),center(2),k(1),k(2));
+    hold on;
 %     % 4 Antenna Phase Method
 %     quiver(a/2,a/2,knew(1),knew(2));
 %     hold on; 
@@ -277,7 +298,7 @@ for fileNum=10:10%length(filesList)
     quiver(center(1),center(2),knew3(1),knew3(2));
     hold on;
 %     % 3 Antenna Phase Method (top 3 amplitudes)
-    quiver(a/2,a/2,knew4(1),knew4(2));
+    quiver(center(1),center(2),knew4(1),knew4(2));
     hold on;
     % 2 Antenna Phase Method (top 2 amplitudes)
     quiver(center(1),center(2),knew5(1),knew5(2));
@@ -290,7 +311,7 @@ for fileNum=10:10%length(filesList)
 %     axis([-1 2 -1 2]);
     axis([center(1)-1.5 center(1)+1.5 center(2)-1.5 center(2)+1.5]);
     legend('on');
-    legend('Amplitude', 'Phase(3)', 'Phase(2)');
+    legend('Real', 'Amplitude', 'Phase(3)', 'Phase(2)');
 %     legend('Amplitude',  'Phase(2)');
     %Draw coordinate lines
     plot(line13x,line13y);

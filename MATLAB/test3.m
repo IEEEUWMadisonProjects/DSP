@@ -30,6 +30,8 @@ a = .4699*sqrt(2); %[m] - about what our antenna spacing is
 % r2 = [a, 0]+shift;
 % r3 = [a, a]+shift;
 % r4 = [0, a]+shift;
+
+%%%%% BIG PART OF WORKING PHASE CODE %%%%%%%%%
 r1 = [-a/2, -a/2];
 r2 = [a/2, -a/2];
 r3 = [a/2, a/2];
@@ -169,6 +171,7 @@ Ein = [real(E(1,1:tVecIdx(1)-1)), real(E(2,tVecIdx(1):tVecIdx(2)-1)),...
         mean(phaseDiff(startIndex(4):(startIndex(4)+phsAveSize)))];
     bkr/pi
     OrderPhase(bkr/pi)
+    %%%%% BIG PART OF WORKING PHASE CODE %%%%%%%%%
     if ~(sum(bkr)<10^(-4) && sum(bkr)>-10^(-4))
         bkr = bkr - sum(bkr)/4;
     end

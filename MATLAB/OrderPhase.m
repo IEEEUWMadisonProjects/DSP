@@ -13,7 +13,7 @@ indx = -1;
 %move through ordered array looking for big differences in phase
 for i=1:length(phases)-1
     % if there is a difference in phase, make note and store which antennas
-    if (ord(1,i+1) - ord(1,i)) >= pi
+    if abs(ord(1,i+1) - ord(1,i)) >= pi
         indx = i;
         break;
     end
